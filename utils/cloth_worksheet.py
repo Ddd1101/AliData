@@ -158,3 +158,6 @@ class ClothWorksheet:
         theta = (self.CalSize(_size) - 90) / 5
         _col = 5 + theta
         return _col
+
+    def write_out(self):
+        pass
