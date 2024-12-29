@@ -6,20 +6,24 @@ from utils.cloth_worksheet import ClothWorksheet
 
 
 class ClothTradeManager:
-    def __init__(self, shop_name):
+    def __init__(self):
         self.price_worksheet = ClothWorksheet(global_params.price_path, global_params.ShopType.ALI_CHILD_CLOTH)
 
-    def set_params(self, start_time, end_time, shop_names: list, order_status: list, filter_tags: list, mode: list):
+    def set_params(self, start_time, end_time, shop_names: list, order_status: list, filter_tags: list):
         # 开始时间
-        self.start_time = start_time
+        self.start_time = api.formate_date(start_time)
         # 结束时间
-        self.end_time = end_time
+        self.end_time = api.formate_date(end_time)
         # 订单类型
         self.order_status = order_status
         # 过滤色标
         self.filter_tags = filter_tags
         # 店铺名字
         self.shop_names = shop_names
+
+
+    def start(self):
+        pass
 
     def OrderList(
             self,
@@ -220,8 +224,6 @@ class ClothTradeManager:
         self.GetBeihuoJson(
             orderList, isPrintOwn, mode, limitDeliveredTime, isPrintUnitPrice
         )
-
-
 
     # 获取订单号列表
     # 筛除刷单

@@ -1,4 +1,6 @@
 import hmac
+from datetime import datetime
+
 import global_params
 import time
 import requests
@@ -106,6 +108,7 @@ def GetDeliveryTraceData(data, shopName):
 
     return response.json()
 
+
 def GetSingleTradeData(data, shopName):
     data["access_token"] = global_params.access_token[shopName]
     _aop_signature = CalculateSignature(
@@ -123,3 +126,10 @@ def GetSingleTradeData(data, shopName):
     res = requests.post(url, data=data)
 
     return res.json()
+
+
+def formate_date(date: datetime):
+    year = date.year
+    month = date.month
+    day = date.day
+    return datetime(int(year), int(month), int(day)).strftime("%Y%m%d") + "000000000+0800"
