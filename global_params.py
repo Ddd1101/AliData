@@ -63,3 +63,16 @@ SHOPTYPE_ALI_ACCESSOR = 2
 
 global_SHOPTYPE = SHOPTYPE_ALI_CHILD_CLOTH
 global_OrderNum = 0
+
+from enum import Enum
+
+# 定义一个枚举类型
+class OrderStatus(Enum):
+    WAIT_SELLER_SEND = "waitsellersend"
+    WAIT_BUYER_RECEIVE = "waitbuyerreceive"
+
+class ShopType(Enum):
+    ALI_CHILD_CLOTH = 1
+    ALI_ACCESSOR = 2
+
+
