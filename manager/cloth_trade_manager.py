@@ -1,5 +1,6 @@
 import utils.ali_api as api
 import global_params
+from common.settings import Settings
 from utils import utils
 from datetime import datetime, date, timedelta
 from utils.cloth_worksheet import ClothWorksheet
@@ -9,11 +10,11 @@ class ClothTradeManager:
     def __init__(self):
         self.price_worksheet = ClothWorksheet(global_params.price_path, global_params.ShopType.ALI_CHILD_CLOTH)
 
-    def set_params(self, start_time, end_time, shop_names: list, order_status: list, filter_tags: list):
+    def start(self, create_start_time, create_end_time, shop_names: list, order_status: list, filter_tags: list):
         # 开始时间
-        self.start_time = api.formate_date(start_time)
+        self.create_start_time = api.formate_date(create_start_time)
         # 结束时间
-        self.end_time = api.formate_date(end_time)
+        self.create_end_time = api.formate_date(create_end_time)
         # 订单类型
         self.order_status = order_status
         # 过滤色标
@@ -21,10 +22,60 @@ class ClothTradeManager:
         # 店铺名字
         self.shop_names = shop_names
 
+        self.mode = ""
 
-    def start(self):
+        self.settings = Settings(shopNames=self.shop_names, mode=self.mode, fileter=filter_tags,
+                                 createStartTime=create_start_time,
+                                 createEndTime=create_end_time, orderStatus=self.order_status, isPrintOwn=True,
+                                 limitDeliveredTime=[], isPrintUnitPrice="")
+
+        self.get_order_list()
+
+    def get_order_list(self):
+        print(
+            "start OrderList shopname" + self.settings.shopName + " mode:" + str(self.settings.mode), "debug"
+        )
+
+        order_list_origin = []
+        order_for_process = []
+
+        # 1. 遍历状态
+        for order_status in self.settings.orderStatus:
+            req_data = {
+                "createStartTime": self.settings.createStartTime.strip(),
+                "createEndTime": self.settings.createEndTime.strip(),
+                "orderStatus": order_status.strip(),  # 只获取已发出 或者 已签收  todo：或者已完成未到账 或者已完成
+                "needMemoInfo": "true",
+            }
+            # 2. 遍历店铺
+            for shop_name in self.shop_names:
+                # 2.1 获取总页数
+                res = api.GetTradeData(req_data, shop_name)
+                page_num = utils.CalPageNum(res["totalRecord"])
+
+                # 
+                for pageId in range(page_num):
+                    # 2.2.1 遍历订单
+                    for order in res["result"]:
+                        # 过滤掉刷单
+                        if ("sellerRemarkIcon" in order["baseInfo"]) and (
+                                order["baseInfo"]["sellerRemarkIcon"] == "2"
+                                or order["baseInfo"]["sellerRemarkIcon"] == "3"
+                        ):
+                            continue
+                        # todo: 做一个单独的过滤方法 过滤红 或者 黄标签
+                        order_list_origin += res["result"]
+
+
+
+                # 收集原始订单结束
+    # 根据标签过滤订单
+    def filter_list_by_tags(self):
         pass
 
+    # 根据发货时间过滤订单
+    def filter_list_by_deliver_time(self):
+        pass
     def OrderList(
             self,
             shopName,
