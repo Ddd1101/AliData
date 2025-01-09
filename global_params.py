@@ -1,9 +1,11 @@
 import os
 
+
 class Utils:
     def __init__(self, path):
         """初始化 Person 对象"""
         self.name = path
+
     def greet(self):
         """打印问候语"""
         return f"你好，我叫 {self.name}，我 {self.age} 岁。"
@@ -12,6 +14,7 @@ class Utils:
         """年龄加一"""
         self.age += 1
         print(f"生日快乐！现在你 {self.age} 岁了。")
+
 
 AppKey = {
     "联球制衣厂": "3527689",
@@ -66,14 +69,21 @@ global_OrderNum = 0
 
 from enum import Enum
 
-# 定义一个枚举类型
+
+# 订单收货状态
 class OrderStatus(Enum):
     TRADE_SUCCESS = "success"
     WAIT_SELLER_SEND = "waitsellersend"
     WAIT_BUYER_RECEIVE = "waitbuyerreceive"
 
+# 订店铺类型
 class ShopType(Enum):
     ALI_CHILD_CLOTH = 1
     ALI_ACCESSOR = 2
 
-
+# 订单标签类型
+class OrderTags(Enum):
+    RED = "1"
+    BLUE = "2"
+    GREEN = "3"
+    YELLOW = "4"

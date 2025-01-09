@@ -9,8 +9,10 @@ if __name__ == "__main__":
     end_time = todayTmp + timedelta(days=0)
     cloth_trade_manager = ClothTradeManager()
 
-    shop_names = ["联球制衣厂", "朝雄制衣厂"]
-    order_status = []
-    filter_tags = [global_params.OrderStatus.TRADE_SUCCESS]
-    cloth_trade_manager.set_params(shop_names=shop_names, create_start_time=start_time,
-                                   create_end_time=end_time, order_status=order_status, filter_tags=filter_tags)
+    shop_names = ["朝雄制衣厂"]
+    order_status = [global_params.OrderStatus.WAIT_BUYER_RECEIVE.value]
+    filter_tags = []
+    cloth_trade_manager.set_params(shop_names=shop_names, start_time=start_time, end_time=end_time,
+                                   order_status=order_status, filter_tags=filter_tags)
+
+    cloth_trade_manager.get_sales_amount()

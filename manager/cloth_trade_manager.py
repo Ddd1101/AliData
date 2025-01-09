@@ -8,31 +8,23 @@ from utils.cloth_worksheet import ClothWorksheet
 
 class ClothTradeManager:
     def __init__(self):
-        self.settings = None
         self.shop_names = None
-        self.create_start_time = None
-        self.create_end_time = None
-        self.order_status = None
-        self.filter_tags = None
+        self.hasGetOrders = None
+        self.origin_orders = None
+        self.settings = None
+        self.start_time = None
+        self.end_time = None
         self.need_process_order_count = None
         self.price_worksheet = ClothWorksheet(global_params.price_path, global_params.ShopType.ALI_CHILD_CLOTH)
 
     def set_params(self, start_time, end_time, shop_names: list, order_status: list, filter_tags: list):
-        # 店铺名字
-        self.shop_names = shop_names
         # 开始时间
-        self.create_start_time = api.formate_date(start_time)
+        self.start_time = api.formate_date(start_time)
         # 结束时间
-        self.create_end_time = api.formate_date(end_time)
-        # 订单类型
-        self.order_status = order_status
-        # 过滤色标
-        self.filter_tags = filter_tags
+        self.end_time = api.formate_date(end_time)
 
-        self.need_process_order_count = 0
-
-        self.settings = Settings(shop_names=self.shop_names, start_time=start_time, end_time=end_time,
-                                 order_status=self.order_status, limit_delivered_ime=[])
+        self.settings = Settings(shop_names=shop_names, start_time=self.start_time, end_time=self.end_time,
+                                 order_status=order_status, limit_delivered_ime=[], filter_tags=filter_tags)
 
         self.origin_orders: list = []
         self.hasGetOrders = False
@@ -47,10 +39,10 @@ class ClothTradeManager:
             self.get_origin_order_list()
 
     # 获取销售额
-    def get_sales_amount(self, start_date, end_date):
+    def get_sales_amount(self):
         self.check_orders()
-        origin_orders = self.get_origin_order_list()
-        orders_filter_by_tags = self.filter_order_by_tags(origin_orders)
+        # orders_filter_by_tags = self.filter_order_by_tags(self.origin_orders)
+        print(self.origin_orders)
 
     # 获取利润
     def get_profit(self):
@@ -64,21 +56,22 @@ class ClothTradeManager:
         print("start get_origin_order_list")
 
         # 1. 遍历状态
-        for order_status in self.settings.orderStatus:
+        for order_status in self.settings.order_status:
+            print(order_status)
             req_data = {
-                "createStartTime": self.settings.createStartTime.strip(),
-                "createEndTime": self.settings.createEndTime.strip(),
-                "orderStatus": order_status.strip(),  # 只获取已发出 或者 已签收  todo：或者已完成未到账 或者已完成
+                "createStartTime": self.settings.start_time.strip(),
+                "createEndTime": self.settings.end_time.strip(),
+                "orderStatus": order_status,  # 只获取已发出 或者 已签收  todo：或者已完成未到账 或者已完成
                 "needMemoInfo": "true",
             }
             # 2. 遍历店铺
-            for shop_name in self.shop_names:
+            for shop_name in self.settings.shop_names:
                 print("start get_origin_order_list-" + order_status + "-" + shop_name)
                 # 2.1 获取总页数
                 res = api.GetTradeData(req_data, shop_name)
                 page_num = utils.CalPageNum(res["totalRecord"])
 
-                # 
+                # 2.2 按页获取订单项
                 for pageId in range(page_num):
                     # 2.2.1 遍历订单
                     for order in res["result"]:

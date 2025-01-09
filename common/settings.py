@@ -12,7 +12,7 @@ class Settings:
         if limit_delivered_ime is None:
             limit_delivered_ime = []
 
-        self.shop_name = shop_names
+        self.shop_names = shop_names
         self.start_time = start_time
         self.end_time = end_time
         self.order_status = order_status
