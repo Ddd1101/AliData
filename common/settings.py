@@ -1,19 +1,21 @@
 class Settings:
-    def __init__(self, shopNames,
-                 mode,
-                 filter: list,
-                 createStartTime,
-                 createEndTime,
-                 orderStatus: list,
-                 isPrintOwn,
-                 limitDeliveredTime:list,
-                 isPrintUnitPrice):
-        self.shopName = shopNames
-        self.mode = mode
-        self.filter = filter
-        self.createStartTime = createStartTime
-        self.createEndTime = createEndTime
-        self.orderStatus = orderStatus
-        self.isPrintOwn = isPrintOwn
-        self.limitDeliveredTime = limitDeliveredTime
-        self.isPrintUnitPrice = isPrintUnitPrice
+    def __init__(self,
+                 shop_names,
+                 start_time,
+                 end_time,
+                 order_status: list,
+                 is_print_unit_price=False,
+                 filter_tags=None,
+                 limit_delivered_ime=None):
+        if filter_tags is None:
+            filter_tags = []
+        if limit_delivered_ime is None:
+            limit_delivered_ime = []
+
+        self.shop_name = shop_names
+        self.start_time = start_time
+        self.end_time = end_time
+        self.order_status = order_status
+        self.limit_delivered_ime = limit_delivered_ime
+        self.filter_tags = filter_tags
+        self.is_print_unit_price = is_print_unit_price
