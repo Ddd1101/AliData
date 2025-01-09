@@ -1,0 +1,106 @@
+{
+	'baseInfo': {
+		'payTime': '20250108195718000+0800',
+		'discount': 0,
+		'alipayTradeId': '11190600025010821827946566406',
+		'sumProductPayment': 28.5,
+		'flowTemplateCode': 'assureTrade',
+		'sellerOrder': False,
+		'buyerLoginId': '静*',
+		'modifyTime': '20250109204603000+0800',
+		'id': 2435653741493560664,
+		'tradeType': '50060',
+		'buyerContact': {
+			'phone': '',
+			'imInPlatform': '静*'
+		},
+		'idOfStr': '2435653741493560664',
+		'stepPayAll': False,
+		'sellerLoginId': '朝*',
+		'totalAmount': 30.98,
+		'shippingFee': 3.9,
+		'createTime': '20250108195710000+0800',
+		'sellerRemarkIcon': '4',
+		'sellerMemo': '',
+		'businessType': 'cn',
+		'overSeaOrder': False,
+		'refund': 0,
+		'status': 'waitbuyerreceive',
+		'refundPayment': 0,
+		'sellerContact': {
+			'phone': '86-0577-65437890',
+			'imInPlatform': '朝*',
+			'name': '侯必飞',
+			'companyName': '苍南县朝雄服装厂'
+		},
+		'buyerOpenUid': 'BBBnS9w1Bz3276xOlSsV9MF2Q'
+	},
+	'productItems': [{
+		'itemAmount': 27.08,
+		'name': '儿童本命年内衣套装龙年大红色纯棉男女童棉毛衫中小大童秋衣秋裤',
+		'price': 28.5,
+		'productID': 734450116971,
+		'productImgUrl': ['http://cbu01.alicdn.com/img/ibank/O1CN01mKmuxR1Bs31jtfC43_!!0-0-cib.80x80.jpg', 'http://cbu01.alicdn.com/img/ibank/O1CN01mKmuxR1Bs31jtfC43_!!0-0-cib.jpg'],
+		'productSnapshotUrl': 'https://trade.1688.com/order/offer_snapshot.htm?order_entry_id=2435653741493560664',
+		'quantity': 1,
+		'refund': 0,
+		'skuID': 5082191829119,
+		'status': 'waitbuyerreceive',
+		'subItemID': 2435653741493560664,
+		'type': 'common',
+		'unit': '套',
+		'guaranteesTerms': [{
+			'assuranceInfo': '卖家承诺买家签收货物后7天内，在“商品完好”的情形下，向买家提供退货服务。',
+			'assuranceType': 'qtwlybt',
+			'qualityAssuranceType': '7天无理由退货'
+		}, {
+			'assuranceInfo': '卖家在承诺买家保障服务的基础上，向买家提供“48小时发货延必赔”的服务。在买家通过支付宝担保交易完成付款或通过货到付款下单成功后，卖家承诺在买家支付成功起48小时内发货。如卖家未履行前述承诺，买家可在指定期限内发起维权，并申请赔付。',
+			'assuranceType': 'ssbxsfh',
+			'qualityAssuranceType': '48小时发货'
+		}, {
+			'assuranceInfo': '“在符合一定的退款申请原因、时效和退款金额范围内，可享受0秒退款服务。',
+			'assuranceType': 'jstk_p',
+			'qualityAssuranceType': '极速退款'
+		}],
+		'productCargoNumber': '230238',
+		'skuInfos': [{
+			'name': '颜色',
+			'value': '【大童】中领本命龙'
+		}, {
+			'name': '适合身高',
+			'value': '150cm'
+		}],
+		'entryDiscount': 0,
+		'specId': '25b43b07f1a0babcdb73a3185707a0d8',
+		'quantityFactor': 1,
+		'statusStr': '等待买家收货',
+		'logisticsStatus': 2,
+		'gmtCreate': '20250108195710000+0800',
+		'gmtModified': '20250109204603000+0800',
+		'subItemIDString': '2435653741493560664'
+	}],
+	'tradeTerms': [{
+		'phase': 51497582584560664,
+		'payWayDesc': '支付平台',
+		'expressPay': False,
+		'payTime': '20250108195718000+0800',
+		'payStatusDesc': '已付款',
+		'payWay': '13',
+		'cardPay': False,
+		'payStatus': '2',
+		'phasAmount': 30.98
+	}],
+	'orderRateInfo': {
+		'sellerRateStatus': 5,
+		'buyerRateStatus': 5
+	},
+	'extAttributes': [{
+		'key': 'b_i24h',
+		'value': '0'
+	}, {
+		'key': 'b_i48h',
+		'value': '1'
+	}],
+	'fromEncryptOrder': False,
+	'officialLogisticOrder': False
+}

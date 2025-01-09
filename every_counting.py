@@ -11,7 +11,7 @@ if __name__ == "__main__":
 
     shop_names = ["朝雄制衣厂"]
     order_status = [global_params.OrderStatus.WAIT_BUYER_RECEIVE.value]
-    filter_tags = []
+    filter_tags = [global_params.OrderTags.BLUE.value, global_params.OrderTags.GREEN.value]
     cloth_trade_manager.set_params(shop_names=shop_names, start_time=start_time, end_time=end_time,
                                    order_status=order_status, filter_tags=filter_tags)
 

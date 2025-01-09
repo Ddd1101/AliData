@@ -22,11 +22,15 @@ class ClothTradeManager:
         self.start_time = api.formate_date(start_time)
         # 结束时间
         self.end_time = api.formate_date(end_time)
-
+        # 其他参数设置
         self.settings = Settings(shop_names=shop_names, start_time=self.start_time, end_time=self.end_time,
                                  order_status=order_status, limit_delivered_ime=[], filter_tags=filter_tags)
 
-        self.origin_orders: list = []
+        self.origin_orders = {}
+        for shop_name in shop_names:
+            self.origin_orders[shop_name] = []
+        print(self.origin_orders)
+        self.shuadan_orders = []
         self.hasGetOrders = False
 
     def clean_orders(self):
@@ -41,8 +45,18 @@ class ClothTradeManager:
     # 获取销售额
     def get_sales_amount(self):
         self.check_orders()
-        # orders_filter_by_tags = self.filter_order_by_tags(self.origin_orders)
-        print(self.origin_orders)
+        # 过滤标签
+
+        amount = {}
+        for shop_name in self.settings.shop_names:
+            amount[shop_name] = {"sumProductPayment": 0, "refundPayment": 0}
+        for shop_name in self.origin_orders:
+            print(len(self.origin_orders[shop_name]))
+            for order in self.origin_orders[shop_name]:
+                amount[shop_name]["sumProductPayment"] += order["baseInfo"]["sumProductPayment"]
+                amount[shop_name]["refundPayment"] += order["baseInfo"]["refundPayment"]
+
+            print(amount)
 
     # 获取利润
     def get_profit(self):
@@ -73,16 +87,27 @@ class ClothTradeManager:
 
                 # 2.2 按页获取订单项
                 for pageId in range(page_num):
+                    req_data = {
+                        "page": str(pageId + 1),
+                        "createStartTime": self.settings.start_time.strip(),
+                        "createEndTime": self.settings.end_time.strip(),
+                        "orderStatus": order_status,  # 只获取已发出 或者 已签收  todo：或者已完成未到账 或者已完成
+                        "needMemoInfo": "true",
+                    }
+                    res = api.GetTradeData(req_data, shop_name)
+                    # print(res)
                     # 2.2.1 遍历订单
+                    print(len(res["result"]))
                     for order in res["result"]:
                         # 过滤掉刷单
                         if ("sellerRemarkIcon" in order["baseInfo"]) and (
-                                order["baseInfo"]["sellerRemarkIcon"] == "2"
-                                or order["baseInfo"]["sellerRemarkIcon"] == "3"
+                                order["baseInfo"]["sellerRemarkIcon"] == global_params.OrderTags.BLUE.value
+                                or order["baseInfo"]["sellerRemarkIcon"] == global_params.OrderTags.GREEN.value
                         ):
+                            self.shuadan_orders += order
                             continue
                         # todo: 做一个单独的过滤方法 过滤红 或者 黄标签
-                        self.origin_orders += res["result"]
+                        self.origin_orders[shop_name].append(order)
 
         self.hasGetOrders = True
         print("end get_origin_order_list")
@@ -92,8 +117,10 @@ class ClothTradeManager:
         pass
 
     # 根据标签过滤订单
-    def filter_order_by_tags(self, order_list):
-        pass
+    def filter_order_by_tags(self):
+        print("start filter_order_by_tags")
+        for tag in self.settings.filter_tags:
+            print(tag)
 
     # 过滤退货产品item
     def filter_refunds_products(self, order_list):
@@ -105,183 +132,5 @@ class ClothTradeManager:
     def get_beihuo_json(self, order_list):
         pass
 
-    def GetOrderBill(
-            self,
-            createStartTime,
-            createEndTime,
-            order_status: list,
-            shop_names: list,
-            isPrintOwn,
-            mode=0,
-            filter=0,
-            limitDeliveredTime={},
-            isPrintUnitPrice=False,
-    ):
-        print("start GetOrderBill", "debug")
-
-        shopNameList = shop_names
-
-        orderListRaw = []
-
-        orderstatusList = order_status
-
-        orderList = []
-
-        for shopName in shopNameList:
-            orderListRaw.clear()
-            for orderstatus in orderstatusList:
-                data = {
-                    "createStartTime": createStartTime.strip(),
-                    "createEndTime": createEndTime.strip(),
-                    "orderStatus": orderstatus.strip(),
-                    "needMemoInfo": "true",
-                }
-
-                response = api.GetTradeData(data, shopName)
-                if orderstatus == "waitsellersend":
-                    orderstatusStr = "待发货"
-                if orderstatus == "waitbuyerreceive":
-                    orderstatusStr = "已发货"
-
-                pageNum = utils.CalPageNum(response["totalRecord"])
-
-                # 规格化数据
-                for pageId in range(pageNum):
-                    data = {
-                        "page": str(pageId + 1),
-                        "createStartTime": createStartTime,
-                        "createEndTime": createEndTime,
-                        "orderStatus": orderstatus,
-                        "needMemoInfo": "true",
-                    }
-                    response = api.GetTradeData(data, shopName)
-                    if (
-                            orderstatus == "waitsellersend"
-                            or orderstatus == "waitbuyerreceive"
-                    ):
-                        for order in response["result"]:
-                            if ("sellerRemarkIcon" in order["baseInfo"]) and (
-                                    order["baseInfo"]["sellerRemarkIcon"] == "2"
-                                    or order["baseInfo"]["sellerRemarkIcon"] == "3"
-                            ):
-                                continue
-
-                            # 过滤红/黄标签
-                            if "sellerRemarkIcon" in order["baseInfo"]:
-                                # 过滤红标签
-                                if (
-                                        filter == 1
-                                        and order["baseInfo"]["sellerRemarkIcon"] == "1"
-                                ):
-                                    print("过滤红标签")
-                                    continue
-                                # 过滤黄标签
-                                if (
-                                        filter == 2
-                                        and order["baseInfo"]["sellerRemarkIcon"] == "4"
-                                ):
-                                    print("过滤黄标签")
-                                    continue
-
-                    orderListRaw += response["result"]
-
-                if len(limitDeliveredTime) >= 2:
-                    for order in orderListRaw:
-                        if (
-                                "allDeliveredTime" in order["baseInfo"]
-                                and len(limitDeliveredTime) > 0
-                        ):  # 根据发货时间判断是否要输出
-                            allDeliveredTime = int(
-                                order["baseInfo"]["allDeliveredTime"][:-8]
-                            )
-                            if (
-                                    allDeliveredTime
-                                    < limitDeliveredTime["deleveredStartTime"]
-                                    or allDeliveredTime
-                                    > limitDeliveredTime["deleveredEndTime"]
-                            ):
-                                continue
-                            else:
-                                orderList.append(order)
-                else:
-                    for order in orderListRaw:
-                        # 过滤黄标签
-                        if "sellerRemarkIcon" in order["baseInfo"]:
-                            if (
-                                    filter == 2
-                                    and order["baseInfo"]["sellerRemarkIcon"] == "4"
-                            ):
-                                print("过滤黄标签")
-                                continue
-                            else:
-                                orderList.append(order)
-                        else:
-                            orderList.append(order)
-
-                orderListRaw.clear()
-
-        self.Logout2("# " + orderstatusStr + " : " + str(len(orderList)) + "条记录")
-        global global_OrderNum
-        global_OrderNum = len(orderList)
-
-        # todo: 童裝/饰品方法不同
-        self.GetBeihuoJson(
-            orderList, isPrintOwn, mode, limitDeliveredTime, isPrintUnitPrice
-        )
-
-    # 获取订单号列表
-    # 筛除刷单
-    def GetOrderBill2(
-            createStartTime,
-            createEndTime,
-            orderstatusStr,
-            shopName,
-            mode=0,
-            limitDeliveredTime={},
-    ):
-        orderList = []
-
-        orderstatusList = orderstatusStr.split(",")
-
-        for orderstatus in orderstatusList:
-            data = {
-                "createStartTime": createStartTime,
-                "createEndTime": createEndTime,
-                "orderStatus": orderstatus,
-                "needMemoInfo": "true",
-            }
-            response = api.GetTradeData(data, shopName)
-            if orderstatus == "waitsellersend":
-                orderstatusStr = "待发货"
-            if orderstatus == "waitbuyerreceive":
-                orderstatusStr = "已发货"
-            # self.Logout('# ' + orderstatusStr + ' : ' + str(response['totalRecord']) + '条记录')
-            pageNum = utils.CalPageNum(response["totalRecord"])
-
-            # 规格化数据
-            for pageId in range(pageNum):
-                data = {
-                    "page": str(pageId + 1),
-                    "createStartTime": createStartTime,
-                    "createEndTime": createEndTime,
-                    "orderStatus": orderstatus,
-                    "needMemoInfo": "true",
-                }
-                response = api.GetTradeData(data, shopName)
-
-                if orderstatus == "waitsellersend" or orderstatus == "waitbuyerreceive":
-                    for order in response["result"]:
-                        if ("sellerRemarkIcon" in ["baseInfo"]) and (
-                                order["baseInfo"]["sellerRemarkIcon"] == "2"
-                                or order["baseInfo"]["sellerRemarkIcon"] == "3"
-                        ):
-                            continue
-                        elif mode != 0 and "sellerRemarkIcon" not in order["baseInfo"]:
-                            if mode == 1:
-                                order["baseInfo"]["sellerRemarkIcon"] = "1"
-                            elif mode == 4:
-                                order["baseInfo"]["sellerRemarkIcon"] = "4"
-
-                orderList += response["result"]
-
-        return orderList
+    def get_deliver_info(self):
+        pass
