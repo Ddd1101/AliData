@@ -49,12 +49,20 @@ class ClothTradeManager:
 
         amount = {}
         for shop_name in self.settings.shop_names:
-            amount[shop_name] = {"sumProductPayment": 0, "refundPayment": 0}
+            amount[shop_name] = {"sumProductPayment": 0, "shippingFee":0,"refund": 0}
         for shop_name in self.origin_orders:
-            print(len(self.origin_orders[shop_name]))
+            print("订单数： " + str(len(self.origin_orders[shop_name])))
             for order in self.origin_orders[shop_name]:
+                print(order["baseInfo"]["idOfStr"])
+                print(order["baseInfo"]["sumProductPayment"])
+                print(order["baseInfo"]["shippingFee"])
+                print(order["baseInfo"]["refund"])
+                for each in order["tradeTerms"]:
+                    print(each["payStatusDesc"])
+                print("================")
                 amount[shop_name]["sumProductPayment"] += order["baseInfo"]["sumProductPayment"]
-                amount[shop_name]["refundPayment"] += order["baseInfo"]["refundPayment"]
+                amount[shop_name]["shippingFee"] += order["baseInfo"]["shippingFee"]
+                amount[shop_name]["refund"] += order["baseInfo"]["refund"]
 
             print(amount)
 
@@ -68,7 +76,6 @@ class ClothTradeManager:
     # 收集原始订单
     def get_origin_order_list(self):
         print("start get_origin_order_list")
-
         # 1. 遍历状态
         for order_status in self.settings.order_status:
             print(order_status)
@@ -76,6 +83,7 @@ class ClothTradeManager:
                 "createStartTime": self.settings.start_time.strip(),
                 "createEndTime": self.settings.end_time.strip(),
                 "orderStatus": order_status,  # 只获取已发出 或者 已签收  todo：或者已完成未到账 或者已完成
+                # "refundStatus": "refundsuccess",
                 "needMemoInfo": "true",
             }
             # 2. 遍历店铺
@@ -85,6 +93,8 @@ class ClothTradeManager:
                 res = api.GetTradeData(req_data, shop_name)
                 page_num = utils.CalPageNum(res["totalRecord"])
 
+                print("订单页数：" + str(page_num))
+
                 # 2.2 按页获取订单项
                 for pageId in range(page_num):
                     req_data = {
@@ -92,13 +102,14 @@ class ClothTradeManager:
                         "createStartTime": self.settings.start_time.strip(),
                         "createEndTime": self.settings.end_time.strip(),
                         "orderStatus": order_status,  # 只获取已发出 或者 已签收  todo：或者已完成未到账 或者已完成
+                        # "refundStatus":"refundsuccess",
                         "needMemoInfo": "true",
                     }
+                    print(req_data)
                     res = api.GetTradeData(req_data, shop_name)
-                    # print(res)
                     # 2.2.1 遍历订单
-                    print(len(res["result"]))
                     for order in res["result"]:
+                        print(order)
                         # 过滤掉刷单
                         if ("sellerRemarkIcon" in order["baseInfo"]) and (
                                 order["baseInfo"]["sellerRemarkIcon"] == global_params.OrderTags.BLUE.value

@@ -1,54 +1,53 @@
 {
 	'baseInfo': {
-		'payTime': '20250108195718000+0800',
+		'payTime': '20250104163200000+0800',
 		'discount': 0,
-		'alipayTradeId': '11190600025010821827946566406',
-		'sumProductPayment': 28.5,
+		'refundStatus': 'waitselleragree',
+		'alipayTradeId': '11160600025010441245283523692',
+		'sumProductPayment': 257,
 		'flowTemplateCode': 'assureTrade',
 		'sellerOrder': False,
-		'buyerLoginId': '静*',
-		'modifyTime': '20250109204603000+0800',
-		'id': 2435653741493560664,
+		'buyerLoginId': '请*',
+		'modifyTime': '20250107151502000+0800',
+		'id': 4190801545952529236,
 		'tradeType': '50060',
 		'buyerContact': {
 			'phone': '',
-			'imInPlatform': '静*'
+			'imInPlatform': '请*'
 		},
-		'idOfStr': '2435653741493560664',
+		'idOfStr': '4190801545952529236',
 		'stepPayAll': False,
-		'sellerLoginId': '朝*',
-		'totalAmount': 30.98,
-		'shippingFee': 3.9,
-		'createTime': '20250108195710000+0800',
-		'sellerRemarkIcon': '4',
-		'sellerMemo': '',
+		'sellerLoginId': '温*',
+		'totalAmount': 245.15,
+		'shippingFee': 4,
+		'createTime': '20250104163150000+0800',
 		'businessType': 'cn',
 		'overSeaOrder': False,
 		'refund': 0,
 		'status': 'waitbuyerreceive',
 		'refundPayment': 0,
 		'sellerContact': {
-			'phone': '86-0577-65437890',
-			'imInPlatform': '朝*',
-			'name': '侯必飞',
-			'companyName': '苍南县朝雄服装厂'
+			'phone': '',
+			'imInPlatform': '温*',
+			'name': '童丽阳',
+			'companyName': '苍南县万盈饰品厂'
 		},
-		'buyerOpenUid': 'BBBnS9w1Bz3276xOlSsV9MF2Q'
+		'buyerOpenUid': 'BBBfrO50W16AlP6eu2iunyAmg'
 	},
 	'productItems': [{
-		'itemAmount': 27.08,
-		'name': '儿童本命年内衣套装龙年大红色纯棉男女童棉毛衫中小大童秋衣秋裤',
-		'price': 28.5,
-		'productID': 734450116971,
-		'productImgUrl': ['http://cbu01.alicdn.com/img/ibank/O1CN01mKmuxR1Bs31jtfC43_!!0-0-cib.80x80.jpg', 'http://cbu01.alicdn.com/img/ibank/O1CN01mKmuxR1Bs31jtfC43_!!0-0-cib.jpg'],
-		'productSnapshotUrl': 'https://trade.1688.com/order/offer_snapshot.htm?order_entry_id=2435653741493560664',
+		'itemAmount': 34.72,
+		'name': '【洁净之石•茶晶】美拉德配色10m男女同款手串 戴右手洁净',
+		'price': 37,
+		'productID': 807726059086,
+		'productImgUrl': ['http://cbu01.alicdn.com/img/ibank/O1CN01Mquy2p1Bs31Olg1ko_!!0-0-cib.80x80.jpg', 'http://cbu01.alicdn.com/img/ibank/O1CN01Mquy2p1Bs31Olg1ko_!!0-0-cib.jpg'],
+		'productSnapshotUrl': 'https://trade.1688.com/order/offer_snapshot.htm?order_entry_id=4190801545953529236',
 		'quantity': 1,
 		'refund': 0,
-		'skuID': 5082191829119,
+		'skuID': 5660262027762,
 		'status': 'waitbuyerreceive',
-		'subItemID': 2435653741493560664,
+		'subItemID': 4190801545953529236,
 		'type': 'common',
-		'unit': '套',
+		'unit': '条',
 		'guaranteesTerms': [{
 			'assuranceInfo': '卖家承诺买家签收货物后7天内，在“商品完好”的情形下，向买家提供退货服务。',
 			'assuranceType': 'qtwlybt',
@@ -62,33 +61,236 @@
 			'assuranceType': 'jstk_p',
 			'qualityAssuranceType': '极速退款'
 		}],
-		'productCargoNumber': '230238',
+		'productCargoNumber': '240029',
 		'skuInfos': [{
 			'name': '颜色',
-			'value': '【大童】中领本命龙'
-		}, {
-			'name': '适合身高',
-			'value': '150cm'
+			'value': '10mm茶晶+12mm白水晶'
 		}],
 		'entryDiscount': 0,
-		'specId': '25b43b07f1a0babcdb73a3185707a0d8',
+		'specId': 'c20f54de65605e13654367fd2242def3',
 		'quantityFactor': 1,
 		'statusStr': '等待买家收货',
 		'logisticsStatus': 2,
-		'gmtCreate': '20250108195710000+0800',
-		'gmtModified': '20250109204603000+0800',
-		'subItemIDString': '2435653741493560664'
+		'gmtCreate': '20250104163151000+0800',
+		'gmtModified': '20250104165800000+0800',
+		'subItemIDString': '4190801545953529236'
+	}, {
+		'itemAmount': 40.35,
+		'name': '【温柔清冷】精致10mm天然白月光手串手链送女友显白饰品手饰',
+		'price': 43,
+		'productID': 824910795590,
+		'productImgUrl': ['http://cbu01.alicdn.com/img/ibank/O1CN01k4sYMh1Bs2ytwy9XF_!!0-0-cib.80x80.jpg', 'http://cbu01.alicdn.com/img/ibank/O1CN01k4sYMh1Bs2ytwy9XF_!!0-0-cib.jpg'],
+		'productSnapshotUrl': 'https://trade.1688.com/order/offer_snapshot.htm?order_entry_id=4190801545954529236',
+		'quantity': 1,
+		'refund': 0,
+		'skuID': 5711788342672,
+		'status': 'waitbuyerreceive',
+		'subItemID': 4190801545954529236,
+		'type': 'common',
+		'unit': 'PCS',
+		'guaranteesTerms': [{
+			'assuranceInfo': '卖家承诺买家签收货物后7天内，在“商品完好”的情形下，向买家提供退货服务。',
+			'assuranceType': 'qtwlybt',
+			'qualityAssuranceType': '7天无理由退货'
+		}, {
+			'assuranceInfo': '卖家在承诺买家保障服务的基础上，向买家提供“48小时发货延必赔”的服务。在买家通过支付宝担保交易完成付款或通过货到付款下单成功后，卖家承诺在买家支付成功起48小时内发货。如卖家未履行前述承诺，买家可在指定期限内发起维权，并申请赔付。',
+			'assuranceType': 'ssbxsfh',
+			'qualityAssuranceType': '48小时发货'
+		}, {
+			'assuranceInfo': '“在符合一定的退款申请原因、时效和退款金额范围内，可享受0秒退款服务。',
+			'assuranceType': 'jstk_p',
+			'qualityAssuranceType': '极速退款'
+		}],
+		'productCargoNumber': '240050',
+		'skuInfos': [{
+			'name': '颜色',
+			'value': '10mm白月光手串'
+		}],
+		'entryDiscount': 0,
+		'specId': 'c3830615bac2044017cc744e709e2c24',
+		'quantityFactor': 1,
+		'statusStr': '等待买家收货',
+		'refundStatus': 'WAIT_SELLER_AGREE',
+		'logisticsStatus': 2,
+		'gmtCreate': '20250104163151000+0800',
+		'gmtModified': '20250107162757000+0800',
+		'refundId': 'TQ314739974720523692',
+		'subItemIDString': '4190801545954529236'
+	}, {
+		'itemAmount': 76.94,
+		'name': '【莫奈花园】水晶手串天然彩兔毛水晶手链黄兔毛红兔毛手串手男女',
+		'price': 82,
+		'productID': 850278225929,
+		'productImgUrl': ['http://cbu01.alicdn.com/img/ibank/O1CN01aHSmod1Bs31FhpG9g_!!0-0-cib.80x80.jpg', 'http://cbu01.alicdn.com/img/ibank/O1CN01aHSmod1Bs31FhpG9g_!!0-0-cib.jpg'],
+		'productSnapshotUrl': 'https://trade.1688.com/order/offer_snapshot.htm?order_entry_id=4190801545955529236',
+		'quantity': 1,
+		'refund': 0,
+		'skuID': 5679405548864,
+		'status': 'waitbuyerreceive',
+		'subItemID': 4190801545955529236,
+		'type': 'common',
+		'unit': 'PCS',
+		'guaranteesTerms': [{
+			'assuranceInfo': '卖家承诺买家签收货物后7天内，在“商品完好”的情形下，向买家提供退货服务。',
+			'assuranceType': 'qtwlybt',
+			'qualityAssuranceType': '7天无理由退货'
+		}, {
+			'assuranceInfo': '卖家在承诺买家保障服务的基础上，向买家提供“48小时发货延必赔”的服务。在买家通过支付宝担保交易完成付款或通过货到付款下单成功后，卖家承诺在买家支付成功起48小时内发货。如卖家未履行前述承诺，买家可在指定期限内发起维权，并申请赔付。',
+			'assuranceType': 'ssbxsfh',
+			'qualityAssuranceType': '48小时发货'
+		}, {
+			'assuranceInfo': '“在符合一定的退款申请原因、时效和退款金额范围内，可享受0秒退款服务。',
+			'assuranceType': 'jstk_p',
+			'qualityAssuranceType': '极速退款'
+		}],
+		'productCargoNumber': 'SC-240074',
+		'skuInfos': [{
+			'name': '颜色',
+			'value': '高进版天然彩兔毛'
+		}],
+		'entryDiscount': 0,
+		'specId': '7abeb726e6d4ef344a8b7e841c1b6fc8',
+		'quantityFactor': 1,
+		'statusStr': '等待买家收货',
+		'refundStatus': 'WAIT_SELLER_AGREE',
+		'logisticsStatus': 2,
+		'gmtCreate': '20250104163151000+0800',
+		'gmtModified': '20250107151502000+0800',
+		'refundId': 'TQ314739974720523692',
+		'subItemIDString': '4190801545955529236'
+	}, {
+		'itemAmount': 16.89,
+		'name': '【茶话会】原创设计天然水晶茶冰曜石手串手链情侣款送男朋友礼物',
+		'price': 18,
+		'productID': 850490532674,
+		'productImgUrl': ['http://cbu01.alicdn.com/img/ibank/O1CN01CyFORn1Bs30QZdsSC_!!0-0-cib.80x80.jpg', 'http://cbu01.alicdn.com/img/ibank/O1CN01CyFORn1Bs30QZdsSC_!!0-0-cib.jpg'],
+		'productSnapshotUrl': 'https://trade.1688.com/order/offer_snapshot.htm?order_entry_id=4190801545956529236',
+		'quantity': 1,
+		'refund': 0,
+		'skuID': 5640183560846,
+		'status': 'waitbuyerreceive',
+		'subItemID': 4190801545956529236,
+		'type': 'common',
+		'unit': 'PCS',
+		'guaranteesTerms': [{
+			'assuranceInfo': '卖家承诺买家签收货物后7天内，在“商品完好”的情形下，向买家提供退货服务。',
+			'assuranceType': 'qtwlybt',
+			'qualityAssuranceType': '7天无理由退货'
+		}, {
+			'assuranceInfo': '卖家在承诺买家保障服务的基础上，向买家提供“48小时发货延必赔”的服务。在买家通过支付宝担保交易完成付款或通过货到付款下单成功后，卖家承诺在买家支付成功起48小时内发货。如卖家未履行前述承诺，买家可在指定期限内发起维权，并申请赔付。',
+			'assuranceType': 'ssbxsfh',
+			'qualityAssuranceType': '48小时发货'
+		}, {
+			'assuranceInfo': '“在符合一定的退款申请原因、时效和退款金额范围内，可享受0秒退款服务。',
+			'assuranceType': 'jstk_p',
+			'qualityAssuranceType': '极速退款'
+		}],
+		'productCargoNumber': 'SC-240073',
+		'skuInfos': [{
+			'name': '颜色',
+			'value': '冰曜石'
+		}],
+		'entryDiscount': 0,
+		'specId': 'd21a9e5510b7aa1d880bbedf3fbe472c',
+		'quantityFactor': 1,
+		'statusStr': '等待买家收货',
+		'logisticsStatus': 2,
+		'gmtCreate': '20250104163151000+0800',
+		'gmtModified': '20250104165800000+0800',
+		'subItemIDString': '4190801545956529236'
+	}, {
+		'itemAmount': 30.03,
+		'name': '【黑森林】天然银曜石水晶手串情侣简约双圈手链活眼银曜手串新款',
+		'price': 32,
+		'productID': 853003595199,
+		'productImgUrl': ['http://cbu01.alicdn.com/img/ibank/O1CN01DeIcvI1Bs30faDNON_!!0-0-cib.80x80.jpg', 'http://cbu01.alicdn.com/img/ibank/O1CN01DeIcvI1Bs30faDNON_!!0-0-cib.jpg'],
+		'productSnapshotUrl': 'https://trade.1688.com/order/offer_snapshot.htm?order_entry_id=4190801545957529236',
+		'quantity': 1,
+		'refund': 0,
+		'skuID': 5652049836126,
+		'status': 'waitbuyerreceive',
+		'subItemID': 4190801545957529236,
+		'type': 'common',
+		'unit': 'PCS',
+		'guaranteesTerms': [{
+			'assuranceInfo': '卖家承诺买家签收货物后7天内，在“商品完好”的情形下，向买家提供退货服务。',
+			'assuranceType': 'qtwlybt',
+			'qualityAssuranceType': '7天无理由退货'
+		}, {
+			'assuranceInfo': '卖家在承诺买家保障服务的基础上，向买家提供“48小时发货延必赔”的服务。在买家通过支付宝担保交易完成付款或通过货到付款下单成功后，卖家承诺在买家支付成功起48小时内发货。如卖家未履行前述承诺，买家可在指定期限内发起维权，并申请赔付。',
+			'assuranceType': 'ssbxsfh',
+			'qualityAssuranceType': '48小时发货'
+		}, {
+			'assuranceInfo': '“在符合一定的退款申请原因、时效和退款金额范围内，可享受0秒退款服务。',
+			'assuranceType': 'jstk_p',
+			'qualityAssuranceType': '极速退款'
+		}],
+		'productCargoNumber': 'SC-240075',
+		'skuInfos': [{
+			'name': '颜色',
+			'value': '双圈银曜石'
+		}],
+		'entryDiscount': 0,
+		'specId': '95e078c2f7dd474d740dd308cb8bff29',
+		'quantityFactor': 1,
+		'statusStr': '等待买家收货',
+		'logisticsStatus': 2,
+		'gmtCreate': '20250104163151000+0800',
+		'gmtModified': '20250104165800000+0800',
+		'subItemIDString': '4190801545957529236'
+	}, {
+		'itemAmount': 42.22,
+		'name': '天然太阳石橙月光水晶手链手串温柔奶茶色月光石送闺蜜女生日礼物',
+		'price': 45,
+		'productID': 864210951497,
+		'productImgUrl': ['http://cbu01.alicdn.com/img/ibank/O1CN01INir3N1Bs31ODFknD_!!0-0-cib.80x80.jpg', 'http://cbu01.alicdn.com/img/ibank/O1CN01INir3N1Bs31ODFknD_!!0-0-cib.jpg'],
+		'productSnapshotUrl': 'https://trade.1688.com/order/offer_snapshot.htm?order_entry_id=4190801545958529236',
+		'quantity': 1,
+		'refund': 0,
+		'skuID': 5689819433123,
+		'status': 'waitbuyerreceive',
+		'subItemID': 4190801545958529236,
+		'type': 'common',
+		'unit': 'PCS',
+		'guaranteesTerms': [{
+			'assuranceInfo': '卖家承诺买家签收货物后7天内，在“商品完好”的情形下，向买家提供退货服务。',
+			'assuranceType': 'qtwlybt',
+			'qualityAssuranceType': '7天无理由退货'
+		}, {
+			'assuranceInfo': '卖家在承诺买家保障服务的基础上，向买家提供“48小时发货延必赔”的服务。在买家通过支付宝担保交易完成付款或通过货到付款下单成功后，卖家承诺在买家支付成功起48小时内发货。如卖家未履行前述承诺，买家可在指定期限内发起维权，并申请赔付。',
+			'assuranceType': 'ssbxsfh',
+			'qualityAssuranceType': '48小时发货'
+		}, {
+			'assuranceInfo': '“在符合一定的退款申请原因、时效和退款金额范围内，可享受0秒退款服务。',
+			'assuranceType': 'jstk_p',
+			'qualityAssuranceType': '极速退款'
+		}],
+		'productCargoNumber': 'SC-240081',
+		'skuInfos': [{
+			'name': '颜色',
+			'value': '太阳石橙月光10mm'
+		}],
+		'entryDiscount': 0,
+		'specId': 'd3c97e75b32968547a3ab0df30347e00',
+		'quantityFactor': 1,
+		'statusStr': '等待买家收货',
+		'refundStatus': 'WAIT_SELLER_AGREE',
+		'logisticsStatus': 2,
+		'gmtCreate': '20250104163151000+0800',
+		'gmtModified': '20250107151502000+0800',
+		'refundId': 'TQ314739974720523692',
+		'subItemIDString': '4190801545958529236'
 	}],
 	'tradeTerms': [{
-		'phase': 51497582584560664,
+		'phase': 82111755218529236,
 		'payWayDesc': '支付平台',
 		'expressPay': False,
-		'payTime': '20250108195718000+0800',
+		'payTime': '20250104163201000+0800',
 		'payStatusDesc': '已付款',
 		'payWay': '13',
 		'cardPay': False,
 		'payStatus': '2',
-		'phasAmount': 30.98
+		'phasAmount': 245.15
 	}],
 	'orderRateInfo': {
 		'sellerRateStatus': 5,
@@ -99,7 +301,7 @@
 		'value': '0'
 	}, {
 		'key': 'b_i48h',
-		'value': '1'
+		'value': '0'
 	}],
 	'fromEncryptOrder': False,
 	'officialLogisticOrder': False

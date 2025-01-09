@@ -1,0 +1,192 @@
+{
+	'baseInfo': {
+		'payTime': '20250104191822000+0800',
+		'discount': 0,
+		'refundStatus': 'refundclose',
+		'alipayTradeId': '11190600025010447600805925327',
+		'sumProductPayment': 113.5,
+		'flowTemplateCode': 'assureTrade',
+		'sellerOrder': False,
+		'buyerLoginId': '奢*',
+		'modifyTime': '20250109233353000+0800',
+		'id': 2429991084193922753,
+		'tradeType': '50060',
+		'buyerContact': {
+			'phone': '',
+			'imInPlatform': '奢*',
+			'name': '张*'
+		},
+		'receivingTime': '20250109233352364+0800',
+		'idOfStr': '2429991084193922753',
+		'stepPayAll': False,
+		'completeTime': '20250109233354000+0800',
+		'sellerLoginId': '温*',
+		'totalAmount': 108.5,
+		'shippingFee': 0,
+		'createTime': '20250104191809000+0800',
+		'businessType': 'cn',
+		'overSeaOrder': False,
+		'refund': 47.79,
+		'status': 'success',
+		'refundPayment': 4779,
+		'sellerContact': {
+			'phone': '',
+			'imInPlatform': '温*',
+			'name': '童丽阳',
+			'companyName': '苍南县万盈饰品厂'
+		},
+		'buyerOpenUid': 'BBBoVgs6KS2P0ZO-PhPoV6hcA'
+	},
+	'productItems': [{
+		'cargoNumber': '230052-5',
+		'itemAmount': 17.69,
+		'name': '【文创】寺庙同款玛瑙10mm黄玛瑙刻字款水晶红玛瑙手链',
+		'price': 18.5,
+		'productID': 755948673219,
+		'productImgUrl': ['http://cbu01.alicdn.com/img/ibank/O1CN01apvBCJ1Bs2zLF8GBP_!!0-0-cib.80x80.jpg', 'http://cbu01.alicdn.com/img/ibank/O1CN01apvBCJ1Bs2zLF8GBP_!!0-0-cib.jpg'],
+		'productSnapshotUrl': 'https://trade.1688.com/order/offer_snapshot.htm?order_entry_id=2429991084194922753',
+		'quantity': 1,
+		'refund': 0,
+		'skuID': 5210983056980,
+		'status': 'success',
+		'subItemID': 2429991084194922753,
+		'type': 'common',
+		'unit': 'PCS',
+		'guaranteesTerms': [{
+			'assuranceInfo': '卖家承诺买家签收货物后7天内，在“商品完好”的情形下，向买家提供退货服务。',
+			'assuranceType': 'qtwlybt',
+			'qualityAssuranceType': '7天无理由退货'
+		}, {
+			'assuranceInfo': '卖家在承诺买家保障服务的基础上，向买家提供“48小时发货延必赔”的服务。在买家通过支付宝担保交易完成付款或通过货到付款下单成功后，卖家承诺在买家支付成功起48小时内发货。如卖家未履行前述承诺，买家可在指定期限内发起维权，并申请赔付。',
+			'assuranceType': 'ssbxsfh',
+			'qualityAssuranceType': '48小时发货'
+		}, {
+			'assuranceInfo': '“在符合一定的退款申请原因、时效和退款金额范围内，可享受0秒退款服务。',
+			'assuranceType': 'jstk_p',
+			'qualityAssuranceType': '极速退款'
+		}],
+		'productCargoNumber': '230052',
+		'skuInfos': [{
+			'name': '颜色',
+			'value': '红玛瑙'
+		}],
+		'entryDiscount': 0,
+		'specId': '835a8e05aff3d261878295b1ee38378f',
+		'quantityFactor': 1,
+		'statusStr': '交易成功',
+		'logisticsStatus': 3,
+		'gmtCreate': '20250104191810000+0800',
+		'gmtModified': '20250109233353000+0800',
+		'gmtCompleted': '20250109233354000+0800',
+		'subItemIDString': '2429991084194922753'
+	}, {
+		'itemAmount': 47.79,
+		'name': '天然白水晶黄水晶手链送闺蜜礼物玛瑙南红手链女友送礼',
+		'price': 50,
+		'productID': 806691376179,
+		'productImgUrl': ['http://cbu01.alicdn.com/img/ibank/O1CN01RyArmv1Bs31fC6qV8_!!0-0-cib.80x80.jpg', 'http://cbu01.alicdn.com/img/ibank/O1CN01RyArmv1Bs31fC6qV8_!!0-0-cib.jpg'],
+		'productSnapshotUrl': 'https://trade.1688.com/order/offer_snapshot.htm?order_entry_id=2429991084195922753',
+		'quantity': 1,
+		'refund': 47.79,
+		'skuID': 5482868096984,
+		'status': 'success',
+		'subItemID': 2429991084195922753,
+		'type': 'common',
+		'unit': 'PCS',
+		'guaranteesTerms': [{
+			'assuranceInfo': '卖家承诺买家签收货物后7天内，在“商品完好”的情形下，向买家提供退货服务。',
+			'assuranceType': 'qtwlybt',
+			'qualityAssuranceType': '7天无理由退货'
+		}, {
+			'assuranceInfo': '卖家在承诺买家保障服务的基础上，向买家提供“48小时发货延必赔”的服务。在买家通过支付宝担保交易完成付款或通过货到付款下单成功后，卖家承诺在买家支付成功起48小时内发货。如卖家未履行前述承诺，买家可在指定期限内发起维权，并申请赔付。',
+			'assuranceType': 'ssbxsfh',
+			'qualityAssuranceType': '48小时发货'
+		}, {
+			'assuranceInfo': '“在符合一定的退款申请原因、时效和退款金额范围内，可享受0秒退款服务。',
+			'assuranceType': 'jstk_p',
+			'qualityAssuranceType': '极速退款'
+		}],
+		'productCargoNumber': '240027',
+		'skuInfos': [{
+			'name': '颜色',
+			'value': '红了樱桃'
+		}],
+		'entryDiscount': 0,
+		'specId': '765aa4c1ced313f93119efbd016d4108',
+		'quantityFactor': 1,
+		'statusStr': '交易成功',
+		'refundStatus': 'REFUND_SUCCESS',
+		'logisticsStatus': 3,
+		'gmtCreate': '20250104191810000+0800',
+		'gmtModified': '20250109233353000+0800',
+		'gmtCompleted': '20250109233354000+0800',
+		'refundId': 'TQ194780352996925327',
+		'subItemIDString': '2429991084195922753'
+	}, {
+		'cargoNumber': 'SC-240055',
+		'itemAmount': 43.02,
+		'name': '【冰镇葡萄】天然紫水晶手串12mm九紫离火运手链送闺蜜好友',
+		'price': 45,
+		'productID': 830709383047,
+		'productImgUrl': ['http://cbu01.alicdn.com/img/ibank/O1CN01Z8cZgK1Bs2zFbwKkZ_!!0-0-cib.80x80.jpg', 'http://cbu01.alicdn.com/img/ibank/O1CN01Z8cZgK1Bs2zFbwKkZ_!!0-0-cib.jpg'],
+		'productSnapshotUrl': 'https://trade.1688.com/order/offer_snapshot.htm?order_entry_id=2429991084196922753',
+		'quantity': 1,
+		'refund': 0,
+		'skuID': 5739320655211,
+		'status': 'success',
+		'subItemID': 2429991084196922753,
+		'type': 'common',
+		'unit': '件',
+		'guaranteesTerms': [{
+			'assuranceInfo': '卖家承诺买家签收货物后7天内，在“商品完好”的情形下，向买家提供退货服务。',
+			'assuranceType': 'qtwlybt',
+			'qualityAssuranceType': '7天无理由退货'
+		}, {
+			'assuranceInfo': '卖家在承诺买家保障服务的基础上，向买家提供“48小时发货延必赔”的服务。在买家通过支付宝担保交易完成付款或通过货到付款下单成功后，卖家承诺在买家支付成功起48小时内发货。如卖家未履行前述承诺，买家可在指定期限内发起维权，并申请赔付。',
+			'assuranceType': 'ssbxsfh',
+			'qualityAssuranceType': '48小时发货'
+		}, {
+			'assuranceInfo': '“在符合一定的退款申请原因、时效和退款金额范围内，可享受0秒退款服务。',
+			'assuranceType': 'jstk_p',
+			'qualityAssuranceType': '极速退款'
+		}],
+		'productCargoNumber': 'SC-240055',
+		'skuInfos': [{
+			'name': '颜色',
+			'value': '12mm紫水晶'
+		}],
+		'entryDiscount': 0,
+		'specId': '0386fd17649b5404c591bd1153956f83',
+		'quantityFactor': 1,
+		'statusStr': '交易成功',
+		'logisticsStatus': 3,
+		'gmtCreate': '20250104191810000+0800',
+		'gmtModified': '20250109233353000+0800',
+		'gmtCompleted': '20250109233354000+0800',
+		'subItemIDString': '2429991084196922753'
+	}],
+	'tradeTerms': [{
+		'phase': 51262503940922753,
+		'payWayDesc': '支付平台',
+		'expressPay': True,
+		'payTime': '20250104191822000+0800',
+		'payStatusDesc': '已付款',
+		'payWay': '13',
+		'cardPay': True,
+		'payStatus': '6',
+		'phasAmount': 108.5
+	}],
+	'orderRateInfo': {
+		'sellerRateStatus': 5,
+		'buyerRateStatus': 5
+	},
+	'extAttributes': [{
+		'key': 'b_i24h',
+		'value': '0'
+	}, {
+		'key': 'b_i48h',
+		'value': '0'
+	}],
+	'fromEncryptOrder': False,
+	'officialLogisticOrder': False
+}
