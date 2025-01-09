@@ -68,6 +68,7 @@ from enum import Enum
 
 # 定义一个枚举类型
 class OrderStatus(Enum):
+    TRADE_SUCCESS = "success"
     WAIT_SELLER_SEND = "waitsellersend"
     WAIT_BUYER_RECEIVE = "waitbuyerreceive"
 
