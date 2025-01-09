@@ -8,57 +8,60 @@ from utils.cloth_worksheet import ClothWorksheet
 
 class ClothTradeManager:
     def __init__(self):
+        self.settings = None
+        self.shop_names = None
+        self.create_start_time = None
+        self.create_end_time = None
+        self.order_status = None
+        self.filter_tags = None
+        self.need_process_order_count = None
         self.price_worksheet = ClothWorksheet(global_params.price_path, global_params.ShopType.ALI_CHILD_CLOTH)
 
-    def set_params(self, create_start_time, create_end_time, shop_names: list, order_status: list, filter_tags: list):
+    def set_params(self, start_time, end_time, shop_names: list, order_status: list, filter_tags: list):
+        # 店铺名字
+        self.shop_names = shop_names
         # 开始时间
-        self.create_start_time = api.formate_date(create_start_time)
+        self.create_start_time = api.formate_date(start_time)
         # 结束时间
-        self.create_end_time = api.formate_date(create_end_time)
+        self.create_end_time = api.formate_date(end_time)
         # 订单类型
         self.order_status = order_status
         # 过滤色标
         self.filter_tags = filter_tags
-        # 店铺名字
-        self.shop_names = shop_names
-
-        self.mode = ""
 
         self.need_process_order_count = 0
 
-        self.settings = Settings(shopNames=self.shop_names, mode=self.mode, fileter=filter_tags,
-                                 createStartTime=create_start_time,
-                                 createEndTime=create_end_time, orderStatus=self.order_status, isPrintOwn=True,
-                                 limitDeliveredTime=[], isPrintUnitPrice="")
+        self.settings = Settings(shop_names=self.shop_names, start_time=start_time, end_time=end_time,
+                                 order_status=self.order_status, limit_delivered_ime=[])
 
-        self.origin_orders = self.get_origin_order_list()
-
+        self.origin_orders: list = []
+        self.hasGetOrders = False
 
     def clean_orders(self):
+        print("start clean_orders")
         orders_filter_by_tags = self.filter_order_by_tags(self.origin_orders)
         orders_without_refunds = self.filter_refunds_products(orders_filter_by_tags)
 
+    def check_orders(self):
+        if not self.hasGetOrders or len(self.origin_orders) <= 0:
+            self.get_origin_order_list()
 
     # 获取销售额
     def get_sales_amount(self, start_date, end_date):
+        self.check_orders()
         origin_orders = self.get_origin_order_list()
         orders_filter_by_tags = self.filter_order_by_tags(origin_orders)
 
-
     # 获取利润
     def get_profit(self):
-        pass
+        self.check_orders()
 
     def get_fake_order(self):
-        pass
+        self.check_orders()
 
     # 收集原始订单
     def get_origin_order_list(self):
-        print(
-            "start OrderList shopname" + self.settings.shopName + " mode:" + str(self.settings.mode), "debug"
-        )
-
-        order_list_origin = []
+        print("start get_origin_order_list")
 
         # 1. 遍历状态
         for order_status in self.settings.orderStatus:
@@ -70,6 +73,7 @@ class ClothTradeManager:
             }
             # 2. 遍历店铺
             for shop_name in self.shop_names:
+                print("start get_origin_order_list-" + order_status + "-" + shop_name)
                 # 2.1 获取总页数
                 res = api.GetTradeData(req_data, shop_name)
                 page_num = utils.CalPageNum(res["totalRecord"])
@@ -85,9 +89,10 @@ class ClothTradeManager:
                         ):
                             continue
                         # todo: 做一个单独的过滤方法 过滤红 或者 黄标签
-                        order_list_origin += res["result"]
+                        self.origin_orders += res["result"]
 
-        return order_list_origin
+        self.hasGetOrders = True
+        print("end get_origin_order_list")
 
     # 根据发货时间过滤订单
     def filter_order_by_delivered_time(self, order_list):
@@ -102,86 +107,10 @@ class ClothTradeManager:
         pass
 
     def get_refund_producets(self, order_list):
+        pass
 
     def get_beihuo_json(self, order_list):
         pass
-
-
-    def OrderList(
-            self,
-            shopName,
-            mode,
-            filter,
-            createStartTime,
-            createEndTime,
-            orderStatus,
-            isPrintOwn,
-            limitDeliveredTime,
-            isPrintUnitPrice,
-    ):
-        print(
-            "start OrderList shopname" + shopName + " mode:" + str(mode), "debug"
-        )
-        if orderStatus == 0:
-            self.GetOrderBill(
-                createStartTime,
-                createEndTime,
-                "waitbuyerreceive",
-                shopName,
-                isPrintOwn,
-                mode,
-                filter,
-                limitDeliveredTime,
-                isPrintUnitPrice
-            )
-        elif orderStatus == 1:
-            self.GetOrderBill(
-                createStartTime,
-                createEndTime,
-                "waitsellersend,waitbuyerreceive",
-                shopName,
-                isPrintOwn,
-                mode,
-                filter,
-                limitDeliveredTime,
-                isPrintUnitPrice,
-            )
-        elif orderStatus == 2:
-            self.GetOrderBill(
-                createStartTime,
-                createEndTime,
-                "waitsellersend",
-                shopName,
-                isPrintOwn,
-                mode,
-                filter,
-                limitDeliveredTime,
-                isPrintUnitPrice
-            )
-        elif orderStatus == 3:
-            self.GetOrderBill(
-                createStartTime,
-                createEndTime,
-                "waitbuyerpay",
-                shopName,
-                isPrintOwn,
-                mode,
-                filter,
-                limitDeliveredTime,
-                isPrintUnitPrice
-            )
-        elif orderStatus == 4:
-            self.GetOrderHistory(
-                createStartTime,
-                createEndTime,
-                "waitbuyerreceive,success",
-                shopName,
-                isPrintOwn,
-                mode,
-                filter,
-                limitDeliveredTime,
-                isPrintUnitPrice
-            )
 
     def GetOrderBill(
             self,
