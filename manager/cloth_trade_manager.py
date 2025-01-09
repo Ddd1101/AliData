@@ -10,7 +10,7 @@ class ClothTradeManager:
     def __init__(self):
         self.price_worksheet = ClothWorksheet(global_params.price_path, global_params.ShopType.ALI_CHILD_CLOTH)
 
-    def start(self, create_start_time, create_end_time, shop_names: list, order_status: list, filter_tags: list):
+    def set_params(self, create_start_time, create_end_time, shop_names: list, order_status: list, filter_tags: list):
         # 开始时间
         self.create_start_time = api.formate_date(create_start_time)
         # 结束时间
@@ -24,20 +24,41 @@ class ClothTradeManager:
 
         self.mode = ""
 
+        self.need_process_order_count = 0
+
         self.settings = Settings(shopNames=self.shop_names, mode=self.mode, fileter=filter_tags,
                                  createStartTime=create_start_time,
                                  createEndTime=create_end_time, orderStatus=self.order_status, isPrintOwn=True,
                                  limitDeliveredTime=[], isPrintUnitPrice="")
 
-        self.get_order_list()
+        self.origin_orders = self.get_origin_order_list()
 
-    def get_order_list(self):
+
+    def clean_orders(self):
+        orders_filter_by_tags = self.filter_order_by_tags(self.origin_orders)
+        orders_without_refunds = self.filter_refunds_products(orders_filter_by_tags)
+
+
+    # 获取销售额
+    def get_sales_amount(self, start_date, end_date):
+        origin_orders = self.get_origin_order_list()
+        orders_filter_by_tags = self.filter_order_by_tags(origin_orders)
+
+
+    # 获取利润
+    def get_profit(self):
+        pass
+
+    def get_fake_order(self):
+        pass
+
+    # 收集原始订单
+    def get_origin_order_list(self):
         print(
             "start OrderList shopname" + self.settings.shopName + " mode:" + str(self.settings.mode), "debug"
         )
 
         order_list_origin = []
-        order_for_process = []
 
         # 1. 遍历状态
         for order_status in self.settings.orderStatus:
@@ -66,16 +87,26 @@ class ClothTradeManager:
                         # todo: 做一个单独的过滤方法 过滤红 或者 黄标签
                         order_list_origin += res["result"]
 
-
-
-                # 收集原始订单结束
-    # 根据标签过滤订单
-    def filter_list_by_tags(self):
-        pass
+        return order_list_origin
 
     # 根据发货时间过滤订单
-    def filter_list_by_deliver_time(self):
+    def filter_order_by_delivered_time(self, order_list):
         pass
+
+    # 根据标签过滤订单
+    def filter_order_by_tags(self, order_list):
+        pass
+
+    # 过滤退货产品item
+    def filter_refunds_products(self, order_list):
+        pass
+
+    def get_refund_producets(self, order_list):
+
+    def get_beihuo_json(self, order_list):
+        pass
+
+
     def OrderList(
             self,
             shopName,
