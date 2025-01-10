@@ -48,7 +48,6 @@ def GetTradeData(data, shopName):
             + global_params.AppKey[shopName]
     )
     try:
-        time.sleep(0.2)
         res = requests.post(url, data=data)
     except Exception as e:
         print("post error ", e)

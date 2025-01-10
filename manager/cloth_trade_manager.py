@@ -29,7 +29,7 @@ class ClothTradeManager:
         self.origin_orders = {}
         for shop_name in shop_names:
             self.origin_orders[shop_name] = []
-        print(self.origin_orders)
+        # print(self.origin_orders)
         self.shuadan_orders = []
         self.hasGetOrders = False
 
@@ -53,18 +53,18 @@ class ClothTradeManager:
         for shop_name in self.origin_orders:
             print("订单数： " + str(len(self.origin_orders[shop_name])))
             for order in self.origin_orders[shop_name]:
-                print(order["baseInfo"]["idOfStr"])
-                print(order["baseInfo"]["sumProductPayment"])
-                print(order["baseInfo"]["shippingFee"])
-                print(order["baseInfo"]["refund"])
-                for each in order["tradeTerms"]:
-                    print(each["payStatusDesc"])
-                print("================")
+                # print(order["baseInfo"]["idOfStr"])
+                # print(order["baseInfo"]["sumProductPayment"])
+                # print(order["baseInfo"]["shippingFee"])
+                # print(order["baseInfo"]["refund"])
+                # for each in order["tradeTerms"]:
+                #     print(each["payStatusDesc"])
+                # print("================")
                 amount[shop_name]["sumProductPayment"] += order["baseInfo"]["sumProductPayment"]
                 amount[shop_name]["shippingFee"] += order["baseInfo"]["shippingFee"]
                 amount[shop_name]["refund"] += order["baseInfo"]["refund"]
-
-            print(amount)
+        print(self.settings.start_time)
+        print(amount)
 
     # 获取利润
     def get_profit(self):
@@ -88,6 +88,8 @@ class ClothTradeManager:
             }
             # 2. 遍历店铺
             for shop_name in self.settings.shop_names:
+                if "_aop_signature" in req_data:
+                    req_data.pop("_aop_signature")
                 print("start get_origin_order_list-" + order_status + "-" + shop_name)
                 # 2.1 获取总页数
                 res = api.GetTradeData(req_data, shop_name)
@@ -105,11 +107,11 @@ class ClothTradeManager:
                         # "refundStatus":"refundsuccess",
                         "needMemoInfo": "true",
                     }
-                    print(req_data)
+                    # print(req_data)
                     res = api.GetTradeData(req_data, shop_name)
                     # 2.2.1 遍历订单
                     for order in res["result"]:
-                        print(order)
+                        # print(order)
                         # 过滤掉刷单
                         if ("sellerRemarkIcon" in order["baseInfo"]) and (
                                 order["baseInfo"]["sellerRemarkIcon"] == global_params.OrderTags.BLUE.value
