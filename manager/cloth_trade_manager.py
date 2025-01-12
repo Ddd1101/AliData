@@ -43,12 +43,11 @@ class ClothTradeManager:
         orders_without_refunds = self.filter_refunds_products(orders_filter_by_tags)
 
     def check_orders(self):
-        if not self.hasGetOrders or len(self.origin_orders) <= 0:
-            self.get_all_origin_order_list()
+        pass
 
     # 获取销售额
     def get_sales_amount(self):
-        self.check_orders()
+        self.get_all_origin_order_list()
         # 过滤标签
         amount = {}
         for shop_name in self.settings.shop_names:
