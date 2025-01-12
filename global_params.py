@@ -73,6 +73,7 @@ from enum import Enum
 # 订单收货状态
 class OrderStatus(Enum):
     TRADE_SUCCESS = "success"
+    TRADE_CANCEL = "cancel"
     WAIT_SELLER_SEND = "waitsellersend"
     WAIT_BUYER_RECEIVE = "waitbuyerreceive"
 
@@ -87,3 +88,6 @@ class OrderTags(Enum):
     BLUE = "2"
     GREEN = "3"
     YELLOW = "4"
+
+class RefundStatus(Enum):
+    REFUNDS_SUCCESS = "refundsuccess"
