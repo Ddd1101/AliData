@@ -44,30 +44,18 @@ class ClothTradeManager:
 
     def check_orders(self):
         if not self.hasGetOrders or len(self.origin_orders) <= 0:
-            self.get_origin_order_list()
+            self.get_all_origin_order_list()
 
     # 获取销售额
     def get_sales_amount(self):
         self.check_orders()
         # 过滤标签
         amount = {}
-        status_types = {}
         for shop_name in self.settings.shop_names:
             amount[shop_name] = OrderAmount()
         for shop_name in self.origin_orders:
             print("订单数： " + str(len(self.origin_orders[shop_name])))
             for order in self.origin_orders[shop_name]:
-                # print(order)
-                # print("===================================")'
-
-                if "refundStatus" in order["baseInfo"]:
-                    status_types[order["baseInfo"]["refundStatus"]] = {"id": order["baseInfo"]["id"]}
-                    # print(order)
-
-                # if order["baseInfo"]["status"] not in status_types:
-                #     status_types[order["baseInfo"]["status"]] = {"id": order["baseInfo"]["id"], "count": 0}
-                # status_types[order["baseInfo"]["status"]]["count"] += 1
-
                 single_order_amount = self.get_single_order_amount(order)
                 if single_order_amount != None:
                     amount[shop_name].sum_product_payment += single_order_amount.sum_product_payment
@@ -76,7 +64,7 @@ class ClothTradeManager:
                     amount[shop_name].refund += single_order_amount.refund
                     amount[shop_name].refund_shipping_fee += single_order_amount.refund_shipping_fee
             print(amount[shop_name].total_amount, amount[shop_name].refund)
-        pprint(status_types)
+        return amount
 
     # 订单退款计算
     def get_single_order_amount(self, order):
@@ -157,7 +145,6 @@ class ClothTradeManager:
             amount.refund += refund_amount["refund_amount"]
 
         return amount
-
 
     def get_single_order_amount_waitbuyerreceive(self, order):
         amount = OrderAmount()
@@ -278,50 +265,47 @@ class ClothTradeManager:
         print("end get_origin_order_list")
 
     def get_all_origin_order_list(self):
-        print("start get_origin_order_list")
-        # 1. 遍历状态
-        for order_status in self.settings.order_status:
-            print(order_status)
-            req_data = {
-                "createStartTime": self.settings.start_time.strip(),
-                "createEndTime": self.settings.end_time.strip(),
-                "needMemoInfo": "true",
-                "pageSize": 20
-            }
-            # 2. 遍历店铺
-            for shop_name in self.settings.shop_names:
-                if "_aop_signature" in req_data:
-                    req_data.pop("_aop_signature")
-                print("start get_origin_order_list-" + order_status + "-" + shop_name)
-                # 2.1 获取总页数
+        print("start get_all_origin_order_list")
+        req_data = {
+            "createStartTime": self.settings.start_time.strip(),
+            "createEndTime": self.settings.end_time.strip(),
+            "needMemoInfo": "true",
+            "pageSize": 20
+        }
+        # 2. 遍历店铺
+        for shop_name in self.settings.shop_names:
+            if "_aop_signature" in req_data:
+                req_data.pop("_aop_signature")
+            print("start get_all_origin_order_list-" + shop_name)
+            # 获取总页数
+            res = api.GetTradeData(req_data, shop_name)
+            page_num = utils.CalPageNum(res["totalRecord"])
+
+            print("订单页数：" + str(page_num))
+
+            # 2.2 按页获取订单项
+            for pageId in range(page_num):
+                req_data = {
+                    "page": str(pageId + 1),
+                    "createStartTime": self.settings.start_time.strip(),
+                    "createEndTime": self.settings.end_time.strip(),
+                    "needMemoInfo": "true",
+                    "pageSize": 20
+                }
+                # print(req_data)
                 res = api.GetTradeData(req_data, shop_name)
-                page_num = utils.CalPageNum(res["totalRecord"])
-
-                print("订单页数：" + str(page_num))
-
-                # 2.2 按页获取订单项
-                for pageId in range(page_num):
-                    req_data = {
-                        "page": str(pageId + 1),
-                        "createStartTime": self.settings.start_time.strip(),
-                        "createEndTime": self.settings.end_time.strip(),
-                        "needMemoInfo": "true",
-                        "pageSize": 20
-                    }
-                    # print(req_data)
-                    res = api.GetTradeData(req_data, shop_name)
-                    # 2.2.1 遍历订单
-                    for order in res["result"]:
-                        # print(order)
-                        # 过滤掉刷单
-                        if ("sellerRemarkIcon" in order["baseInfo"]) and (
-                                order["baseInfo"]["sellerRemarkIcon"] == global_params.OrderTags.BLUE.value
-                                or order["baseInfo"]["sellerRemarkIcon"] == global_params.OrderTags.GREEN.value
-                        ):
-                            self.shuadan_orders += order
-                            continue
-                        # todo: 做一个单独的过滤方法 过滤红 或者 黄标签
-                        self.origin_orders[shop_name].append(order)
+                # 2.2.1 遍历订单
+                for order in res["result"]:
+                    # print(order)
+                    # 过滤掉刷单
+                    if ("sellerRemarkIcon" in order["baseInfo"]) and (
+                            order["baseInfo"]["sellerRemarkIcon"] == global_params.OrderTags.BLUE.value
+                            or order["baseInfo"]["sellerRemarkIcon"] == global_params.OrderTags.GREEN.value
+                    ):
+                        self.shuadan_orders += order
+                        continue
+                    # todo: 做一个单独的过滤方法 过滤红 或者 黄标签
+                    self.origin_orders[shop_name].append(order)
 
         self.hasGetOrders = True
         print("end get_origin_order_list")

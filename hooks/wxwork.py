@@ -1,5 +1,11 @@
+from datetime import datetime, date, timedelta
+from pprint import pprint
+
 import requests
 import json
+
+import global_params
+from manager.cloth_trade_manager import ClothTradeManager
 
 webhook = "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=c8732431-40a3-4915-b117-76940eacca18"
 
@@ -24,7 +30,7 @@ def send_text(webhook, content, mentioned_list=None, mentioned_mobile_list=None)
 
 
 # 发送markdown消息
-def send_md(webhook, content):
+def send_md(webhook, messsage):
     header = {
         "Content-Type": "application/json",
         "Charset": "UTF-8"
@@ -33,13 +39,80 @@ def send_md(webhook, content):
 
         "msgtype": "markdown",
         "markdown": {
-            "content": content
+            "content": messsage
         }
     }
     data = json.dumps(data)
     info = requests.post(url=webhook, data=data, headers=header)
 
 
-content = "# 实时新增用户反馈<font color=\"warning\">132例</font>，请相关同事注意。\n >类型:<font color=\"comment\">用户反馈</font>\n > 普通用户反馈:<font color=\"comment\">117例</font>\n## VIP用户反馈:<font color=\"comment\">15例</font>"
+# "# **销售汇算**\n" +
+# "#### **请相关同事注意，及时跟进！**\n" +
+# "> **--------------------联球制衣厂--------------------**\n"+
+# "> **销售额：**<font color=\"info\">%s</font>\n**失败数：**<font color=\"warning\">%s</font>\n" +
+# "> **退款额：**<font color=\"info\">%s</font>\n**失败数：**<font color=\"warning\">%s</font>\n" +
 
-send_md(webhook, content)
+def message(message):
+    data = {
+        "msgtype": "markdown",  # 消息类型，此时固定为markdown
+        "markdown": {
+            "content": ("# **销售汇算**\n" +
+                        "### 1688平台\n" +
+                        message)
+        }
+    }
+    return data
+
+
+def formate_single_message(shop_name, sale_amount, refund_amount):
+    res = ("> **--------------------%s--------------------**\n" +
+           "> **销售额：**<font color=\"info\">%s 元</font>\n" +
+           "> **退款数：**<font color=\"info\">%s 元</font>\n" +
+           "> **总  计：**<font color=\"info\">%s 元</font>\n") % (
+              shop_name, round(sale_amount, 2), round(refund_amount, 2), round(sale_amount - refund_amount, 2))
+    return res
+
+
+def formate_all_message(amount):
+    header = "# **销售汇算**\n" + "#### **1688平台**\n"
+    tailer = ""
+
+    total_message = ""
+    total_amount = 0
+    total_refund = 0
+    for shop_name in amount:
+        total_message += formate_single_message(shop_name, amount_res[shop_name].total_amount,
+                                                amount_res[shop_name].refund)
+        total_amount += amount_res[shop_name].total_amount
+        total_refund += amount_res[shop_name].refund
+
+    total_message += formate_single_message("销售额总和", total_amount, total_refund)
+
+    return header + total_message + tailer
+
+
+if __name__ == "__main__":
+    todayTmp = datetime.strptime(str(date.today()), "%Y-%m-%d")
+    start_time = todayTmp + timedelta(days=-1)
+    end_time = todayTmp + timedelta(days=0)
+    # start_time = datetime(2024, 12, 1)
+    # end_time = datetime(2025, 1, 13)
+    cloth_trade_manager = ClothTradeManager()
+
+    shop_names = ["万盈饰品厂", "联球制衣厂", "朝雄制衣厂", "朝瑞制衣厂"]
+    order_status = [global_params.OrderStatus.TRADE_SUCCESS.value, global_params.OrderStatus.TRADE_CANCEL.value,
+                    global_params.OrderStatus.SEND_GOODS_BUT_NOT_FUND.value,
+                    global_params.OrderStatus.WAIT_BUYER_RECEIVE.value,
+                    global_params.OrderStatus.CONFIRM_GOODS_BUT_NOT_FUND.value,
+                    global_params.OrderStatus.SEND_GOODS_BUT_NOT_FUND.value]
+    # order_status = [global_params.OrderStatus.WAIT_SELLER_SEND.value]
+    filter_tags = [global_params.OrderTags.BLUE.value, global_params.OrderTags.GREEN.value]
+    cloth_trade_manager.set_params(shop_names=shop_names, start_time=start_time, end_time=end_time,
+                                   order_status=order_status, filter_tags=filter_tags)
+
+    amount_res = cloth_trade_manager.get_sales_amount()
+    message = formate_all_message(amount_res)
+
+    print(message)
+
+    send_md(webhook, message)
