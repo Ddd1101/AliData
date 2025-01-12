@@ -3,6 +3,7 @@ from pprint import pprint
 
 import utils.ali_api as api
 import global_params
+from common.order_amount import OrderAmount
 from common.settings import Settings
 from utils import utils
 from datetime import datetime, date, timedelta
@@ -49,7 +50,6 @@ class ClothTradeManager:
     def get_sales_amount(self):
         self.check_orders()
         # 过滤标签
-
         amount = {}
         refunds_amount = {}
         for shop_name in self.settings.shop_names:
@@ -57,41 +57,66 @@ class ClothTradeManager:
         for shop_name in self.origin_orders:
             print("订单数： " + str(len(self.origin_orders[shop_name])))
             for order in self.origin_orders[shop_name]:
-                if "refundStatus" in order["baseInfo"]:
-                    refund_status = order["baseInfo"]["refundStatus"]
-                    if refund_status not in refunds_amount:
-                        refunds_amount[refund_status] = {}
-                    order_status = order["baseInfo"]["status"]
-                    if order_status not in refunds_amount[refund_status]:
-                        refunds_amount[refund_status][order_status] = {}
+                # if "refundStatus" in order["baseInfo"]:
+                #     refund_status = order["baseInfo"]["refundStatus"]
+                #     if refund_status not in refunds_amount:
+                #         refunds_amount[refund_status] = {}
+                #     order_status = order["baseInfo"]["status"]
+                #     if order_status not in refunds_amount[refund_status]:
+                #         refunds_amount[refund_status][order_status] = {}
 
-                if "refundStatus" in order["baseInfo"] and order["baseInfo"]["refundStatus"] == "refundsuccess":
-                    # print(order)
-                    pass
-                    # refund_order_amount = self.get_single_order_refund_amount(order)
-                    # amount[shop_name]["sumProductPayment"] += refund_order_amount["sumProductPayment"]
-                    # amount[shop_name]["shippingFee"] += refund_order_amount["shippingFee"]
-                    # amount[shop_name]["refund"] += refund_order_amount["refund"]
-                else:
-                    # print(order["baseInfo"]["idOfStr"])
-                    # print(order["baseInfo"]["sumProductPayment"])
-                    # print(order["baseInfo"]["shippingFee"])
-                    # print(order["baseInfo"]["refund"])
-                    # for each in order["tradeTerms"]:
-                    #     print(each["payStatusDesc"])
-                    # print("================")
-                    amount[shop_name]["sumProductPayment"] += order["baseInfo"]["sumProductPayment"]
-                    amount[shop_name]["shippingFee"] += order["baseInfo"]["shippingFee"]
-                    amount[shop_name]["refund"] += order["baseInfo"]["refund"]
-        print(self.settings.start_time)
-        pprint(amount)
-        pprint(refunds_amount)
+                self.get_single_order_amount(order)
+
+                # if "refundStatus" in order["baseInfo"] and order["baseInfo"]["refundStatus"] == "refundsuccess":
+                #     # print(order)
+                #     pass
+                #     # refund_order_amount = self.get_single_order_refund_amount(order)
+                #     # amount[shop_name]["sumProductPayment"] += refund_order_amount["sumProductPayment"]
+                #     # amount[shop_name]["shippingFee"] += refund_order_amount["shippingFee"]
+                #     # amount[shop_name]["refund"] += refund_order_amount["refund"]
+                # else:
+                #     # print(order["baseInfo"]["idOfStr"])
+                #     # print(order["baseInfo"]["sumProductPayment"])
+                #     # print(order["baseInfo"]["shippingFee"])
+                #     # print(order["baseInfo"]["refund"])
+                #     # for each in order["tradeTerms"]:
+                #     #     print(each["payStatusDesc"])
+                #     # print("================")
+                #     amount[shop_name]["sumProductPayment"] += order["baseInfo"]["sumProductPayment"]
+                #     amount[shop_name]["shippingFee"] += order["baseInfo"]["shippingFee"]
+                #     amount[shop_name]["refund"] += order["baseInfo"]["refund"]
+        # pprint(self.settings.start_time)
+        # pprint(amount)
+        # pprint(refunds_amount)
 
     # 订单退款计算
-    def get_single_order_refund_amount(self, order):
+    def get_single_order_amount(self, order):
+        # 1. 判断订单累心 (已成功/待签收/取消/退款)
+        order_status = order["baseInfo"]["status"]
 
-        pass
+        order_amount = None
+        if order_status == "cancel":
+            return self.get_single_order_amount_cancel(order)
 
+    def get_single_order_amount_cancel(self, order):
+        amount = OrderAmount()
+
+        # 买家没付钱主动取消
+        if order["baseInfo"]["alipayTradeId"] == "UNCREATED":
+            return None
+        # 买家没付钱被动取消
+        if "closeReason" in order["baseInfo"]:
+            return None
+
+        # 订单退款/取消
+        amount.id = order["baseInfo"]["id"]
+        amount.sum_product_payment = round(order["baseInfo"]["sumProductPayment"], 2)
+        amount.shipping_fee = round(order["baseInfo"]["shippingFee"], 2)
+        amount.total_amount = round(order["baseInfo"]["totalAmount"], 2)
+        amount.refund = round(order["baseInfo"]["refund"], 2)
+        amount.refund_shipping_fee = round(amount.refund - amount.total_amount + amount.shipping_fee, 2)
+
+        return amount
     # 获取利润
     def get_profit(self):
         self.check_orders()
