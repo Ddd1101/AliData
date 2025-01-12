@@ -58,10 +58,14 @@ class ClothTradeManager:
             print("订单数： " + str(len(self.origin_orders[shop_name])))
             for order in self.origin_orders[shop_name]:
                 # print(order)
-                # print("===================================")
-                if "refundStatus" in order["baseInfo"] and order["baseInfo"]["refundStatus"] not in status_types:
-                    status_types[order["baseInfo"]["refundStatus"]] = {"id": order["baseInfo"]["id"]}
+                # print("===================================")'
 
+                # if "refundStatus" in order["baseInfo"] and order["baseInfo"]["refundStatus"] not in status_types:
+                #     status_types[order["baseInfo"]["refundStatus"]] = {"id": order["baseInfo"]["id"]}
+
+                if order["baseInfo"]["status"] not in status_types:
+                    status_types[order["baseInfo"]["status"]] = {"id": order["baseInfo"]["id"], "count": 0}
+                status_types[order["baseInfo"]["status"]]["count"] += 1
                 # if "refundStatus" in order["baseInfo"]:
                 #     refund_status = order["baseInfo"]["refundStatus"]
                 #     if refund_status not in refunds_amount:
@@ -92,6 +96,9 @@ class ClothTradeManager:
         if order_status == "cancel":
             return self.get_single_order_amount_cancel(order)
 
+        if order_status == "confirm_goods_but_not_fund":
+            return self.get_single_order_amount_send_goods_but_not_fund(order)
+
     def get_single_order_amount_success(self, order):
         # 交易成功
         amount = OrderAmount()
@@ -120,6 +127,17 @@ class ClothTradeManager:
         amount.total_amount = round(order["baseInfo"]["totalAmount"], 2)
         amount.refund = round(order["baseInfo"]["refund"], 2)
         amount.refund_shipping_fee = round(amount.refund - amount.total_amount + amount.shipping_fee, 2)
+
+        return amount
+
+    def get_single_order_amount_send_goods_but_not_fund(self, order):
+        # 丢件
+        amount = OrderAmount()
+        amount.id = order["baseInfo"]["id"]
+        amount.sum_product_payment = round(order["baseInfo"]["sumProductPayment"], 2)
+        amount.shipping_fee = round(order["baseInfo"]["shippingFee"], 2)
+        amount.total_amount = round(order["baseInfo"]["totalAmount"], 2)
+        amount.refund = round(order["baseInfo"]["refund"], 2)
 
         return amount
 
