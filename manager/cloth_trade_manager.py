@@ -200,6 +200,53 @@ class ClothTradeManager:
         self.hasGetOrders = True
         print("end get_origin_order_list")
 
+    def get_all_origin_order_list(self):
+        print("start get_origin_order_list")
+        # 1. 遍历状态
+        for order_status in self.settings.order_status:
+            print(order_status)
+            req_data = {
+                "createStartTime": self.settings.start_time.strip(),
+                "createEndTime": self.settings.end_time.strip(),
+                "needMemoInfo": "true",
+            }
+            # 2. 遍历店铺
+            for shop_name in self.settings.shop_names:
+                if "_aop_signature" in req_data:
+                    req_data.pop("_aop_signature")
+                print("start get_origin_order_list-" + order_status + "-" + shop_name)
+                # 2.1 获取总页数
+                res = api.GetTradeData(req_data, shop_name)
+                page_num = utils.CalPageNum(res["totalRecord"])
+
+                print("订单页数：" + str(page_num))
+
+                # 2.2 按页获取订单项
+                for pageId in range(page_num):
+                    req_data = {
+                        "page": str(pageId + 1),
+                        "createStartTime": self.settings.start_time.strip(),
+                        "createEndTime": self.settings.end_time.strip(),
+                        "needMemoInfo": "true",
+                    }
+                    # print(req_data)
+                    res = api.GetTradeData(req_data, shop_name)
+                    # 2.2.1 遍历订单
+                    for order in res["result"]:
+                        # print(order)
+                        # 过滤掉刷单
+                        if ("sellerRemarkIcon" in order["baseInfo"]) and (
+                                order["baseInfo"]["sellerRemarkIcon"] == global_params.OrderTags.BLUE.value
+                                or order["baseInfo"]["sellerRemarkIcon"] == global_params.OrderTags.GREEN.value
+                        ):
+                            self.shuadan_orders += order
+                            continue
+                        # todo: 做一个单独的过滤方法 过滤红 或者 黄标签
+                        self.origin_orders[shop_name].append(order)
+
+        self.hasGetOrders = True
+        print("end get_origin_order_list")
+
     # 根据发货时间过滤订单
     def filter_order_by_delivered_time(self, order_list):
         pass
