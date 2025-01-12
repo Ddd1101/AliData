@@ -60,19 +60,13 @@ class ClothTradeManager:
                 # print(order)
                 # print("===================================")'
 
-                # if "refundStatus" in order["baseInfo"] and order["baseInfo"]["refundStatus"] not in status_types:
-                #     status_types[order["baseInfo"]["refundStatus"]] = {"id": order["baseInfo"]["id"]}
+                if "refundStatus" in order["baseInfo"]:
+                    status_types[order["baseInfo"]["refundStatus"]] = {"id": order["baseInfo"]["id"]}
+                    # print(order)
 
-                if order["baseInfo"]["status"] not in status_types:
-                    status_types[order["baseInfo"]["status"]] = {"id": order["baseInfo"]["id"], "count": 0}
-                status_types[order["baseInfo"]["status"]]["count"] += 1
-                # if "refundStatus" in order["baseInfo"]:
-                #     refund_status = order["baseInfo"]["refundStatus"]
-                #     if refund_status not in refunds_amount:
-                #         refunds_amount[refund_status] = {}
-                #     order_status = order["baseInfo"]["status"]
-                #     if order_status not in refunds_amount[refund_status]:
-                #         refunds_amount[refund_status][order_status] = {}
+                # if order["baseInfo"]["status"] not in status_types:
+                #     status_types[order["baseInfo"]["status"]] = {"id": order["baseInfo"]["id"], "count": 0}
+                # status_types[order["baseInfo"]["status"]]["count"] += 1
 
                 single_order_amount = self.get_single_order_amount(order)
                 if single_order_amount != None:
@@ -86,17 +80,21 @@ class ClothTradeManager:
 
     # 订单退款计算
     def get_single_order_amount(self, order):
+        print(order)
         # 1. 判断订单累心 (已成功/待签收/取消/退款)
         order_status = order["baseInfo"]["status"]
 
         order_amount = None
-        if order_status == "success":
+        if order_status == global_params.OrderStatus.TRADE_SUCCESS.value:
             return self.get_single_order_amount_success(order)
 
-        if order_status == "cancel":
+        if order_status == global_params.OrderStatus.TRADE_CANCEL.value:
             return self.get_single_order_amount_cancel(order)
 
-        if order_status == "confirm_goods_but_not_fund":
+        if order_status == global_params.OrderStatus.WAIT_BUYER_RECEIVE.value:
+            return self.get_single_order_amount_waitbuyerreceive(order)
+
+        if order_status == global_params.OrderStatus.SEND_GOODS_BUT_NOT_FUND.value:
             return self.get_single_order_amount_send_goods_but_not_fund(order)
 
     def get_single_order_amount_success(self, order):
@@ -130,6 +128,52 @@ class ClothTradeManager:
 
         return amount
 
+    def get_single_order_amount_waitbuyerreceive(self, order):
+        amount = OrderAmount()
+        has_refund = False
+        refund_amount = None
+        # 待收货 -> 有退款
+        if "refundStatus" in order["baseInfo"]:
+            if order["baseInfo"]["refundStatus"] == "waitselleragree":
+                has_refund = True
+                product_items = order["productItems"]
+                refund_amount = self.get_refund_amount_info_by_product_items(product_items)
+                pprint(refund_amount)
+
+        # 首先获取订单参数
+        amount.id = order["baseInfo"]["id"]
+        amount.sum_product_payment = round(order["baseInfo"]["sumProductPayment"], 2)
+        amount.shipping_fee = round(order["baseInfo"]["shippingFee"], 2)
+        amount.total_amount = round(order["baseInfo"]["totalAmount"], 2)
+        amount.refund = round(order["baseInfo"]["refund"], 2)
+
+        # 再减去退款
+        if has_refund:
+            amount.refund += refund_amount["refund_amount"]
+
+        return amount
+
+    def get_refund_amount_info_by_product_items(self, product_items):
+        all_amount = {"normal_amount": 0, "refund_amount": 0}
+        for product_item in product_items:
+            if product_item["refundStatus"] == "WAIT_SELLER_AGREE":
+                all_amount["refund_amount"] += product_item["itemAmount"]
+            else:
+                all_amount["normal_amount"] += product_item["itemAmount"]
+
+        return all_amount
+
+    def get_single_order_amount_confirm_goods_but_not_fund(self, order):
+        # 丢件
+        amount = OrderAmount()
+        amount.id = order["baseInfo"]["id"]
+        amount.sum_product_payment = round(order["baseInfo"]["sumProductPayment"], 2)
+        amount.shipping_fee = round(order["baseInfo"]["shippingFee"], 2)
+        amount.total_amount = round(order["baseInfo"]["totalAmount"], 2)
+        amount.refund = round(order["baseInfo"]["refund"], 2)
+
+        return amount
+
     def get_single_order_amount_send_goods_but_not_fund(self, order):
         # 丢件
         amount = OrderAmount()
@@ -160,6 +204,7 @@ class ClothTradeManager:
                 "orderStatus": order_status,  # 只获取已发出 或者 已签收  todo：或者已完成未到账 或者已完成
                 # "refundStatus": "refundsuccess",
                 "needMemoInfo": "true",
+                "pageSize": 20
             }
             # 2. 遍历店铺
             for shop_name in self.settings.shop_names:
@@ -181,6 +226,7 @@ class ClothTradeManager:
                         "orderStatus": order_status,  # 只获取已发出 或者 已签收  todo：或者已完成未到账 或者已完成
                         # "refundStatus":"refundsuccess",
                         "needMemoInfo": "true",
+                        "pageSize": 20
                     }
                     # print(req_data)
                     res = api.GetTradeData(req_data, shop_name)
@@ -209,6 +255,7 @@ class ClothTradeManager:
                 "createStartTime": self.settings.start_time.strip(),
                 "createEndTime": self.settings.end_time.strip(),
                 "needMemoInfo": "true",
+                "pageSize": 20
             }
             # 2. 遍历店铺
             for shop_name in self.settings.shop_names:
@@ -228,6 +275,7 @@ class ClothTradeManager:
                         "createStartTime": self.settings.start_time.strip(),
                         "createEndTime": self.settings.end_time.strip(),
                         "needMemoInfo": "true",
+                        "pageSize": 20
                     }
                     # print(req_data)
                     res = api.GetTradeData(req_data, shop_name)
