@@ -1,9 +1,8 @@
 from datetime import datetime, date, timedelta
-from pprint import pprint
-
+import schedule
+import time
 import requests
 import json
-
 import global_params
 from manager.cloth_trade_manager import ClothTradeManager
 
@@ -68,30 +67,32 @@ def formate_single_message(shop_name, sale_amount, refund_amount):
     res = ("> **--------------------%s--------------------**\n" +
            "> **销售额：**<font color=\"info\">%s 元</font>\n" +
            "> **退款数：**<font color=\"info\">%s 元</font>\n" +
-           "> **总  计：**<font color=\"info\">%s 元</font>\n") % (
+           "> **总   计：**<font color=\"info\">%s 元</font>\n") % (
               shop_name, round(sale_amount, 2), round(refund_amount, 2), round(sale_amount - refund_amount, 2))
     return res
 
 
 def formate_all_message(amount):
-    header = "# **销售汇算**\n" + "#### **1688平台**\n"
+    today = datetime.strptime(str(date.today()), "%Y-%m-%d")
+    time = today + timedelta(days=-1)
+    header = "# **销售汇算**\n" + "#### **1688平台**\n " + time.strftime("%Y-%m-%d" + "\n")
     tailer = ""
 
     total_message = ""
     total_amount = 0
     total_refund = 0
     for shop_name in amount:
-        total_message += formate_single_message(shop_name, amount_res[shop_name].total_amount,
-                                                amount_res[shop_name].refund)
-        total_amount += amount_res[shop_name].total_amount
-        total_refund += amount_res[shop_name].refund
+        total_message += formate_single_message(shop_name, amount[shop_name].total_amount,
+                                                amount[shop_name].refund)
+        total_amount += amount[shop_name].total_amount
+        total_refund += amount[shop_name].refund
 
     total_message += formate_single_message("销售额总和", total_amount, total_refund)
 
     return header + total_message + tailer
 
 
-if __name__ == "__main__":
+def start():
     todayTmp = datetime.strptime(str(date.today()), "%Y-%m-%d")
     start_time = todayTmp + timedelta(days=-1)
     end_time = todayTmp + timedelta(days=0)
@@ -113,6 +114,16 @@ if __name__ == "__main__":
     amount_res = cloth_trade_manager.get_sales_amount()
     message = formate_all_message(amount_res)
 
-    print(message)
-
     send_md(webhook, message)
+
+
+if __name__ == "__main__":
+    # 设置每日零点执行任务
+    schedule.every().day.at("02:54").do(start)
+
+    print("定时任务已设置")
+
+    while True:
+        # 检查并执行任务
+        schedule.run_pending()
+        time.sleep(1)
