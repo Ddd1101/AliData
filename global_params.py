@@ -76,11 +76,15 @@ class OrderStatus(Enum):
     TRADE_CANCEL = "cancel"
     WAIT_SELLER_SEND = "waitsellersend"
     WAIT_BUYER_RECEIVE = "waitbuyerreceive"
+    CONFIRM_GOODS_BUT_NOT_FUND = "confirm_goods_but_not_fund"
+    SEND_GOODS_BUT_NOT_FUND = "send_goods_but_not_fund"
+
 
 # 订店铺类型
 class ShopType(Enum):
     ALI_CHILD_CLOTH = 1
     ALI_ACCESSOR = 2
+
 
 # 订单标签类型
 class OrderTags(Enum):
@@ -88,6 +92,7 @@ class OrderTags(Enum):
     BLUE = "2"
     GREEN = "3"
     YELLOW = "4"
+
 
 class RefundStatus(Enum):
     REFUNDS_SUCCESS = "refundsuccess"
