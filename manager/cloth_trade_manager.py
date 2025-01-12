@@ -80,7 +80,6 @@ class ClothTradeManager:
 
     # 订单退款计算
     def get_single_order_amount(self, order):
-        print(order)
         # 1. 判断订单累心 (已成功/待签收/取消/退款)
         order_status = order["baseInfo"]["status"]
 
@@ -91,8 +90,14 @@ class ClothTradeManager:
         if order_status == global_params.OrderStatus.TRADE_CANCEL.value:
             return self.get_single_order_amount_cancel(order)
 
+        if order_status == global_params.OrderStatus.WAIT_SELLER_SEND.value:
+            return self.get_single_order_amount_waitsellersend(order)
+
         if order_status == global_params.OrderStatus.WAIT_BUYER_RECEIVE.value:
             return self.get_single_order_amount_waitbuyerreceive(order)
+
+        if order_status == global_params.OrderStatus.CONFIRM_GOODS_BUT_NOT_FUND.value:
+            return self.get_single_order_amount_confirm_goods_but_not_fund(order)
 
         if order_status == global_params.OrderStatus.SEND_GOODS_BUT_NOT_FUND.value:
             return self.get_single_order_amount_send_goods_but_not_fund(order)
@@ -127,6 +132,32 @@ class ClothTradeManager:
         amount.refund_shipping_fee = round(amount.refund - amount.total_amount + amount.shipping_fee, 2)
 
         return amount
+
+    def get_single_order_amount_waitsellersend(self, order):
+        amount = OrderAmount()
+        has_refund = False
+        refund_amount = None
+        # 待收货 -> 有退款
+        if "refundStatus" in order["baseInfo"]:
+            if order["baseInfo"]["refundStatus"] == "waitselleragree":
+                has_refund = True
+                product_items = order["productItems"]
+                refund_amount = self.get_refund_amount_info_by_product_items(product_items)
+                pprint(refund_amount)
+
+        # 首先获取订单参数
+        amount.id = order["baseInfo"]["id"]
+        amount.sum_product_payment = round(order["baseInfo"]["sumProductPayment"], 2)
+        amount.shipping_fee = round(order["baseInfo"]["shippingFee"], 2)
+        amount.total_amount = round(order["baseInfo"]["totalAmount"], 2)
+        amount.refund = round(order["baseInfo"]["refund"], 2)
+
+        # 再减去退款
+        if has_refund:
+            amount.refund += refund_amount["refund_amount"]
+
+        return amount
+
 
     def get_single_order_amount_waitbuyerreceive(self, order):
         amount = OrderAmount()
