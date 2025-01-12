@@ -1,3 +1,14 @@
+import sys
+import os
+
+# 获取当前文件的目录
+current_dir = os.path.dirname(os.path.abspath(__file__))
+# 获取上一层目录
+parent_dir = os.path.abspath(os.path.join(current_dir, '..'))
+
+# 将上一层目录添加到系统路径
+sys.path.append(parent_dir)
+
 from datetime import datetime, date, timedelta
 import schedule
 import time
