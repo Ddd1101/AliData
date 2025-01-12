@@ -51,9 +51,8 @@ class ClothTradeManager:
         self.check_orders()
         # 过滤标签
         amount = {}
-        refunds_amount = {}
         for shop_name in self.settings.shop_names:
-            amount[shop_name] = {"sumProductPayment": 0, "shippingFee": 0, "refund": 0}
+            amount[shop_name] = OrderAmount()
         for shop_name in self.origin_orders:
             print("订单数： " + str(len(self.origin_orders[shop_name])))
             for order in self.origin_orders[shop_name]:
@@ -65,29 +64,14 @@ class ClothTradeManager:
                 #     if order_status not in refunds_amount[refund_status]:
                 #         refunds_amount[refund_status][order_status] = {}
 
-                self.get_single_order_amount(order)
-
-                # if "refundStatus" in order["baseInfo"] and order["baseInfo"]["refundStatus"] == "refundsuccess":
-                #     # print(order)
-                #     pass
-                #     # refund_order_amount = self.get_single_order_refund_amount(order)
-                #     # amount[shop_name]["sumProductPayment"] += refund_order_amount["sumProductPayment"]
-                #     # amount[shop_name]["shippingFee"] += refund_order_amount["shippingFee"]
-                #     # amount[shop_name]["refund"] += refund_order_amount["refund"]
-                # else:
-                #     # print(order["baseInfo"]["idOfStr"])
-                #     # print(order["baseInfo"]["sumProductPayment"])
-                #     # print(order["baseInfo"]["shippingFee"])
-                #     # print(order["baseInfo"]["refund"])
-                #     # for each in order["tradeTerms"]:
-                #     #     print(each["payStatusDesc"])
-                #     # print("================")
-                #     amount[shop_name]["sumProductPayment"] += order["baseInfo"]["sumProductPayment"]
-                #     amount[shop_name]["shippingFee"] += order["baseInfo"]["shippingFee"]
-                #     amount[shop_name]["refund"] += order["baseInfo"]["refund"]
-        # pprint(self.settings.start_time)
-        # pprint(amount)
-        # pprint(refunds_amount)
+                single_order_amount = self.get_single_order_amount(order)
+                if single_order_amount != None:
+                    amount[shop_name].sum_product_payment += single_order_amount.sum_product_payment
+                    amount[shop_name].shipping_fee += single_order_amount.shipping_fee
+                    amount[shop_name].total_amount += single_order_amount.total_amount
+                    amount[shop_name].refund += single_order_amount.refund
+                    amount[shop_name].refund_shipping_fee += single_order_amount.refund_shipping_fee
+            print(amount[shop_name].total_amount, amount[shop_name].refund)
 
     # 订单退款计算
     def get_single_order_amount(self, order):
@@ -95,8 +79,14 @@ class ClothTradeManager:
         order_status = order["baseInfo"]["status"]
 
         order_amount = None
+        if order_status == "success":
+            return self.get_single_order_amount_success(order)
+
         if order_status == "cancel":
             return self.get_single_order_amount_cancel(order)
+
+    def get_single_order_amount_success(self, order):
+        pass
 
     def get_single_order_amount_cancel(self, order):
         amount = OrderAmount()
@@ -117,6 +107,7 @@ class ClothTradeManager:
         amount.refund_shipping_fee = round(amount.refund - amount.total_amount + amount.shipping_fee, 2)
 
         return amount
+
     # 获取利润
     def get_profit(self):
         self.check_orders()
