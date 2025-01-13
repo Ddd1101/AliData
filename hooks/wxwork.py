@@ -17,8 +17,6 @@ import json
 import global_params
 from manager.cloth_trade_manager import ClothTradeManager
 
-webhook = "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=c8732431-40a3-4915-b117-76940eacca18"
-
 
 # 发送文本消息
 def send_text(webhook, content, mentioned_list=None, mentioned_mobile_list=None):
@@ -103,10 +101,29 @@ def formate_all_message(amount):
     return header + total_message + tailer
 
 
+def formate_all_message_for_other(amount, start_time, end_time):
+    header = "# **销售汇算**\n" + "#### **1688平台**\n " + start_time.strftime("%Y-%m-%d") + " 到 " + end_time.strftime(
+        "%Y-%m-%d" + "\n")
+    tailer = ""
+
+    total_message = ""
+    total_amount = 0
+    total_refund = 0
+    for shop_name in amount:
+        total_message += formate_single_message(shop_name, amount[shop_name].total_amount,
+                                                amount[shop_name].refund)
+        total_amount += amount[shop_name].total_amount
+        total_refund += amount[shop_name].refund
+
+    return header + total_message + tailer
+
+
 def start():
+    # webhook = "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=c8732431-40a3-4915-b117-76940eacca18"
+    webhook = "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=60d040d5-9595-490f-82ec-962b10cdf3e3"
     todayTmp = datetime.strptime(str(date.today()), "%Y-%m-%d")
-    start_time = todayTmp + timedelta(days=-1)
-    end_time = todayTmp + timedelta(days=0)
+    start_time = todayTmp + timedelta(days=-3)
+    end_time = todayTmp + timedelta(days=-2)
     # start_time = datetime(2024, 12, 1)
     # end_time = datetime(2025, 1, 13)
     cloth_trade_manager = ClothTradeManager()
@@ -128,13 +145,45 @@ def start():
     send_md(webhook, message)
 
 
-if __name__ == "__main__":
-    # 设置每日零点执行任务
-    schedule.every().day.at("00:00").do(start)
+def other():
+    # webhook = "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=fe36a783-b9a2-4382-9726-6879ec2ae840"
+    webhook = "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=60d040d5-9595-490f-82ec-962b10cdf3e3"
+    todayTmp = datetime.strptime(str(date.today()), "%Y-%m-%d")
+    start_time = todayTmp + timedelta(days=-4)
+    end_time = todayTmp + timedelta(days=-3)
+    # start_time = datetime(2024, 12, 1)
+    # end_time = datetime(2025, 1, 13)
+    cloth_trade_manager = ClothTradeManager()
 
-    print("定时任务已设置")
+    shop_names = ["义乌睿得", "义乌茜阳"]
+    order_status = [global_params.OrderStatus.TRADE_SUCCESS.value, global_params.OrderStatus.TRADE_CANCEL.value,
+                    global_params.OrderStatus.SEND_GOODS_BUT_NOT_FUND.value,
+                    global_params.OrderStatus.WAIT_BUYER_RECEIVE.value,
+                    global_params.OrderStatus.CONFIRM_GOODS_BUT_NOT_FUND.value,
+                    global_params.OrderStatus.SEND_GOODS_BUT_NOT_FUND.value]
+    # order_status = [global_params.OrderStatus.WAIT_SELLER_SEND.value]
+    filter_tags = [global_params.OrderTags.BLUE.value, global_params.OrderTags.GREEN.value]
+    cloth_trade_manager.set_params(shop_names=shop_names, start_time=start_time, end_time=end_time,
+                                   order_status=order_status, filter_tags=filter_tags)
 
-    while True:
-        # 检查并执行任务
-        schedule.run_pending()
-        time.sleep(1)
+    amount_res = cloth_trade_manager.get_sales_amount()
+    start_time = todayTmp + timedelta(days=-4)
+    message = formate_all_message_for_other(amount_res, start_time, end_time)
+
+    send_md(webhook, message)
+
+
+other()
+
+# start()
+
+# if __name__ == "__main__":
+#     # 设置每日零点执行任务
+#     schedule.every().day.at("00:00").do(start)
+#
+#     print("定时任务已设置")
+#
+#     while True:
+#         # 检查并执行任务
+#         schedule.run_pending()
+#         time.sleep(1)

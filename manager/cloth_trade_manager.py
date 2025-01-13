@@ -62,6 +62,13 @@ class ClothTradeManager:
                     amount[shop_name].total_amount += single_order_amount.total_amount
                     amount[shop_name].refund += single_order_amount.refund
                     amount[shop_name].refund_shipping_fee += single_order_amount.refund_shipping_fee
+
+                    if single_order_amount.total_amount >= single_order_amount.refund and single_order_amount.total_amount > 1000:
+                        print("订单销售额：" + str(round(single_order_amount.total_amount, 2)) + " 退款额： " + str(
+                            round(single_order_amount.refund, 2)))
+                        print(order)
+
+
             print(amount[shop_name].total_amount, amount[shop_name].refund)
         return amount
 
@@ -173,7 +180,7 @@ class ClothTradeManager:
     def get_refund_amount_info_by_product_items(self, product_items):
         all_amount = {"normal_amount": 0, "refund_amount": 0}
         for product_item in product_items:
-            if product_item["refundStatus"] == "WAIT_SELLER_AGREE":
+            if "refundStatus" in product_item and product_item["refundStatus"] == "WAIT_SELLER_AGREE":
                 all_amount["refund_amount"] += product_item["itemAmount"]
             else:
                 all_amount["normal_amount"] += product_item["itemAmount"]
@@ -269,6 +276,7 @@ class ClothTradeManager:
             "createStartTime": self.settings.start_time.strip(),
             "createEndTime": self.settings.end_time.strip(),
             "needMemoInfo": "true",
+            "needBuyerAddressAndPhone": "true",
             "pageSize": 20
         }
         # 2. 遍历店铺
@@ -289,6 +297,7 @@ class ClothTradeManager:
                     "createStartTime": self.settings.start_time.strip(),
                     "createEndTime": self.settings.end_time.strip(),
                     "needMemoInfo": "true",
+                    "needBuyerAddressAndPhone": "true",
                     "pageSize": 20
                 }
                 # print(req_data)

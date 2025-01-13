@@ -6,3 +6,4 @@ class OrderAmount:
         self.total_amount = total_amount
         self.refund = refund
         self.refund_shipping_fee = refund_shipping_fee
+        self.order_num = 0

@@ -5,13 +5,13 @@ from manager.cloth_trade_manager import ClothTradeManager
 
 if __name__ == "__main__":
     todayTmp = datetime.strptime(str(date.today()), "%Y-%m-%d")
-    # start_time = todayTmp + timedelta(days=-7)
-    # end_time = todayTmp + timedelta(days=-2)
-    start_time = datetime(2024, 12, 1)
-    end_time = datetime(2025, 1, 13)
+    start_time = todayTmp + timedelta(days=-3)
+    end_time = todayTmp + timedelta(days=-2)
+    # start_time = datetime(2024, 12, 1)
+    # end_time = datetime(2025, 1, 13)
     cloth_trade_manager = ClothTradeManager()
 
-    shop_names = ["联球制衣厂", "朝雄制衣厂", "","万盈饰品厂"]
+    shop_names = ["义乌睿得"]
     order_status = [global_params.OrderStatus.TRADE_SUCCESS.value, global_params.OrderStatus.TRADE_CANCEL.value,
                     global_params.OrderStatus.WAIT_SELLER_SEND.value,
                     global_params.OrderStatus.WAIT_BUYER_RECEIVE.value,
