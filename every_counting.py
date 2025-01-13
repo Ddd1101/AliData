@@ -12,12 +12,13 @@ if __name__ == "__main__":
     cloth_trade_manager = ClothTradeManager()
 
     shop_names = ["义乌睿得"]
-    order_status = [global_params.OrderStatus.TRADE_SUCCESS.value, global_params.OrderStatus.TRADE_CANCEL.value,
-                    global_params.OrderStatus.WAIT_SELLER_SEND.value,
-                    global_params.OrderStatus.WAIT_BUYER_RECEIVE.value,
-                    global_params.OrderStatus.CONFIRM_GOODS_BUT_NOT_FUND.value,
-                    global_params.OrderStatus.SEND_GOODS_BUT_NOT_FUND.value]
+    # order_status = {global_params.OrderStatus.TRADE_SUCCESS.value, global_params.OrderStatus.TRADE_CANCEL.value,
+    #                 global_params.OrderStatus.WAIT_SELLER_SEND.value,
+    #                 global_params.OrderStatus.WAIT_BUYER_RECEIVE.value,
+    #                 global_params.OrderStatus.CONFIRM_GOODS_BUT_NOT_FUND.value,
+    #                 global_params.OrderStatus.SEND_GOODS_BUT_NOT_FUND.value}
     # order_status = [global_params.OrderStatus.WAIT_SELLER_SEND.value]
+    order_status = {global_params.OrderStatus.ALL.value}
     filter_tags = [global_params.OrderTags.BLUE.value, global_params.OrderTags.GREEN.value]
     cloth_trade_manager.set_params(shop_names=shop_names, start_time=start_time, end_time=end_time,
                                    order_status=order_status, filter_tags=filter_tags)

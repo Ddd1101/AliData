@@ -72,6 +72,7 @@ from enum import Enum
 
 # 订单收货状态
 class OrderStatus(Enum):
+    ALL = "all"
     TRADE_SUCCESS = "success"
     TRADE_CANCEL = "cancel"
     WAIT_SELLER_SEND = "waitsellersend"

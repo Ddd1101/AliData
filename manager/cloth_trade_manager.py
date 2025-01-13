@@ -68,33 +68,39 @@ class ClothTradeManager:
                             round(single_order_amount.refund, 2)))
                         print(order)
 
-
             print(amount[shop_name].total_amount, amount[shop_name].refund)
         return amount
 
-    # 订单退款计算
+    #
     def get_single_order_amount(self, order):
         # 1. 判断订单累心 (已成功/待签收/取消/退款)
         order_status = order["baseInfo"]["status"]
 
-        order_amount = None
+        is_available_order = False
+
+        if global_params.OrderStatus.ALL.value in self.settings.order_status:
+            is_available_order = True
+        elif order_status in self.settings.order_status:
+            is_available_order = True
+
+        # 订单不统计直接返回空值
+        if not is_available_order:
+            return None
+
         if order_status == global_params.OrderStatus.TRADE_SUCCESS.value:
             return self.get_single_order_amount_success(order)
-
-        if order_status == global_params.OrderStatus.TRADE_CANCEL.value:
+        elif order_status == global_params.OrderStatus.TRADE_CANCEL.value:
             return self.get_single_order_amount_cancel(order)
-
-        if order_status == global_params.OrderStatus.WAIT_SELLER_SEND.value:
+        elif order_status == global_params.OrderStatus.WAIT_SELLER_SEND.value:
             return self.get_single_order_amount_waitsellersend(order)
-
-        if order_status == global_params.OrderStatus.WAIT_BUYER_RECEIVE.value:
+        elif order_status == global_params.OrderStatus.WAIT_BUYER_RECEIVE.value:
             return self.get_single_order_amount_waitbuyerreceive(order)
-
-        if order_status == global_params.OrderStatus.CONFIRM_GOODS_BUT_NOT_FUND.value:
+        elif order_status == global_params.OrderStatus.CONFIRM_GOODS_BUT_NOT_FUND.value:
             return self.get_single_order_amount_confirm_goods_but_not_fund(order)
-
-        if order_status == global_params.OrderStatus.SEND_GOODS_BUT_NOT_FUND.value:
+        elif order_status == global_params.OrderStatus.SEND_GOODS_BUT_NOT_FUND.value:
             return self.get_single_order_amount_send_goods_but_not_fund(order)
+
+        return None
 
     def get_single_order_amount_success(self, order):
         # 交易成功
@@ -216,7 +222,7 @@ class ClothTradeManager:
     def get_fake_order(self):
         self.check_orders()
 
-    # 收集原始订单
+    # 收集原始订单 (暂时没用，订单重复)
     def get_origin_order_list(self):
         print("start get_origin_order_list")
         # 1. 遍历状态
