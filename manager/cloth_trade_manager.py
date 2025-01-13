@@ -62,6 +62,7 @@ class ClothTradeManager:
                     amount[shop_name].total_amount += single_order_amount.total_amount
                     amount[shop_name].refund += single_order_amount.refund
                     amount[shop_name].refund_shipping_fee += single_order_amount.refund_shipping_fee
+                    amount[shop_name].order_count += 1
 
                     if single_order_amount.total_amount >= single_order_amount.refund and single_order_amount.total_amount > 1000:
                         print("订单销售额：" + str(round(single_order_amount.total_amount, 2)) + " 退款额： " + str(
@@ -73,7 +74,6 @@ class ClothTradeManager:
 
     #
     def get_single_order_amount(self, order):
-        # 1. 判断订单累心 (已成功/待签收/取消/退款)
         order_status = order["baseInfo"]["status"]
 
         is_available_order = False
@@ -102,8 +102,8 @@ class ClothTradeManager:
 
         return None
 
+    # 单笔交易成功
     def get_single_order_amount_success(self, order):
-        # 交易成功
         amount = OrderAmount()
         amount.id = order["baseInfo"]["id"]
         amount.sum_product_payment = round(order["baseInfo"]["sumProductPayment"], 2)
@@ -115,7 +115,6 @@ class ClothTradeManager:
 
     def get_single_order_amount_cancel(self, order):
         amount = OrderAmount()
-
         # 买家没付钱主动取消
         if order["baseInfo"]["alipayTradeId"] == "UNCREATED":
             return None
@@ -276,6 +275,7 @@ class ClothTradeManager:
         self.hasGetOrders = True
         print("end get_origin_order_list")
 
+    # 无视订单状态收集所有原始订单
     def get_all_origin_order_list(self):
         print("start get_all_origin_order_list")
         req_data = {

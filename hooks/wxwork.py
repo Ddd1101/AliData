@@ -1,6 +1,8 @@
 import sys
 import os
 
+from common.order_amount import OrderAmount
+
 # 获取当前文件的目录
 current_dir = os.path.dirname(os.path.abspath(__file__))
 # 获取上一层目录
@@ -72,12 +74,14 @@ def message(message):
     return data
 
 
-def formate_single_message(shop_name, sale_amount, refund_amount):
+def formate_single_message(shop_name, amount: OrderAmount):
     res = ("> **--------------------%s--------------------**\n" +
            "> **销售额：**<font color=\"info\">%s 元</font>\n" +
            "> **退款数：**<font color=\"info\">%s 元</font>\n" +
+           "> **订单数：**<font color=\"info\">%s 单</font>\n" +
            "> **总   计：**<font color=\"info\">%s 元</font>\n") % (
-              shop_name, round(sale_amount, 2), round(refund_amount, 2), round(sale_amount - refund_amount, 2))
+              shop_name, round(amount.total_amount, 2), round(amount.refund, 2), amount.order_count,
+              round(amount.total_amount - amount.refund, 2))
     return res
 
 
@@ -87,15 +91,14 @@ def formate_all_message(amount, start_time, end_time):
     tailer = ""
 
     total_message = ""
-    total_amount = 0
-    total_refund = 0
+    total_amount = OrderAmount()
     for shop_name in amount:
-        total_message += formate_single_message(shop_name, amount[shop_name].total_amount,
-                                                amount[shop_name].refund)
-        total_amount += amount[shop_name].total_amount
-        total_refund += amount[shop_name].refund
+        total_message += formate_single_message(shop_name, amount[shop_name])
+        total_amount.total_amount += amount[shop_name].total_amount
+        total_amount.refund += amount[shop_name].refund
+        total_amount.order_count += amount[shop_name].order_count
 
-    total_message += formate_single_message("销售额总和", total_amount, total_refund)
+    total_message += formate_single_message("销售额总和", total_amount)
 
     return header + total_message + tailer
 
@@ -108,11 +111,12 @@ def formate_all_message_for_other(amount, start_time, end_time):
     total_message = ""
     total_amount = 0
     total_refund = 0
+    total_order_count = 0
     for shop_name in amount:
-        total_message += formate_single_message(shop_name, amount[shop_name].total_amount,
-                                                amount[shop_name].refund)
+        total_message += formate_single_message(shop_name, amount[shop_name])
         total_amount += amount[shop_name].total_amount
         total_refund += amount[shop_name].refund
+        total_order_count += amount[shop_name].order_count
 
     return header + total_message + tailer
 
@@ -148,13 +152,13 @@ def other():
     # webhook = "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=fe36a783-b9a2-4382-9726-6879ec2ae840"
     webhook = "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=60d040d5-9595-490f-82ec-962b10cdf3e3"
     todayTmp = datetime.strptime(str(date.today()), "%Y-%m-%d")
-    start_time = todayTmp + timedelta(days=-4)
-    end_time = todayTmp + timedelta(days=-3)
+    start_time = todayTmp + timedelta(days=-1)
+    end_time = todayTmp + timedelta(days=-0)
     # start_time = datetime(2024, 12, 1)
     # end_time = datetime(2025, 1, 13)
     cloth_trade_manager = ClothTradeManager()
 
-    shop_names = ["义乌睿得", "义乌茜阳"]
+    shop_names = ["万盈饰品厂", "义乌睿得", "义乌茜阳"]
     order_status = [global_params.OrderStatus.TRADE_SUCCESS.value, global_params.OrderStatus.TRADE_CANCEL.value,
                     global_params.OrderStatus.SEND_GOODS_BUT_NOT_FUND.value,
                     global_params.OrderStatus.WAIT_BUYER_RECEIVE.value,
@@ -166,7 +170,6 @@ def other():
                                    order_status=order_status, filter_tags=filter_tags)
 
     amount_res = cloth_trade_manager.get_sales_amount()
-    start_time = todayTmp + timedelta(days=-4)
     message = formate_all_message_for_other(amount_res, start_time, end_time)
 
     send_md(webhook, message)
