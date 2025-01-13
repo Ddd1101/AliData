@@ -125,8 +125,8 @@ def start():
     webhook = "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=c8732431-40a3-4915-b117-76940eacca18"
     # webhook = "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=60d040d5-9595-490f-82ec-962b10cdf3e3"
     todayTmp = datetime.strptime(str(date.today()), "%Y-%m-%d")
-    start_time = todayTmp + timedelta(days=-3)
-    end_time = todayTmp + timedelta(days=-2)
+    start_time = todayTmp + timedelta(days =-1)
+    end_time = todayTmp + timedelta(days= 0)
     # start_time = datetime(2024, 12, 1)
     # end_time = datetime(2025, 1, 13)
     cloth_trade_manager = ClothTradeManager()
@@ -173,11 +173,7 @@ if __name__ == "__main__":
     # 设置每日零点执行任务
     schedule.every().day.at("00:00").do(start)
 
-    schedule.every().day.at("13:00").do(start)
-
     schedule.every().day.at("00:00").do(compare)
-
-    schedule.every().day.at("12:00").do(compare)
 
     print("定时任务已设置")
 
