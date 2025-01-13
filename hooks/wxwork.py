@@ -75,19 +75,19 @@ def message(message):
 
 
 def formate_single_message(shop_name, amount: OrderAmount):
-    res = ("> **--------------------%s--------------------**\n" +
+    res = ("> **------%s------**\n" +
            "> **销售额：**<font color=\"info\">%s 元</font>\n" +
            "> **退款数：**<font color=\"info\">%s 元</font>\n" +
            "> **订单数：**<font color=\"info\">%s 单</font>\n" +
-           "> **总   计：**<font color=\"info\">%s 元</font>\n") % (
+           "> **总   计：**<font color=\"warning\">%s 元</font>\n") % (
               shop_name, round(amount.total_amount, 2), round(amount.refund, 2), amount.order_count,
               round(amount.total_amount - amount.refund, 2))
     return res
 
 
 def formate_all_message(amount, start_time, end_time):
-    header = "# **销售汇算**\n" + "#### **1688平台**\n " + start_time.strftime("%Y-%m-%d") + " 到 " + end_time.strftime(
-        "%Y-%m-%d" + "\n")
+    header = "# **销售汇算**\n" + "#### **1688平台**\n " + "**<font color=\"warning\">" + start_time.strftime(
+        "%Y-%m-%d") + " 到 " + end_time.strftime("%Y-%m-%d" + "</font>**" + "\n")
     tailer = ""
 
     total_message = ""
@@ -132,12 +132,7 @@ def start():
     cloth_trade_manager = ClothTradeManager()
 
     shop_names = ["万盈饰品厂", "联球制衣厂", "朝雄制衣厂", "朝瑞制衣厂"]
-    order_status = [global_params.OrderStatus.TRADE_SUCCESS.value, global_params.OrderStatus.TRADE_CANCEL.value,
-                    global_params.OrderStatus.SEND_GOODS_BUT_NOT_FUND.value,
-                    global_params.OrderStatus.WAIT_BUYER_RECEIVE.value,
-                    global_params.OrderStatus.CONFIRM_GOODS_BUT_NOT_FUND.value,
-                    global_params.OrderStatus.SEND_GOODS_BUT_NOT_FUND.value]
-    # order_status = [global_params.OrderStatus.WAIT_SELLER_SEND.value]
+    order_status = {global_params.OrderStatus.ALL.value}
     filter_tags = [global_params.OrderTags.BLUE.value, global_params.OrderTags.GREEN.value]
     cloth_trade_manager.set_params(shop_names=shop_names, start_time=start_time, end_time=end_time,
                                    order_status=order_status, filter_tags=filter_tags)
@@ -159,12 +154,7 @@ def other():
     cloth_trade_manager = ClothTradeManager()
 
     shop_names = ["万盈饰品厂", "义乌睿得", "义乌茜阳"]
-    order_status = [global_params.OrderStatus.TRADE_SUCCESS.value, global_params.OrderStatus.TRADE_CANCEL.value,
-                    global_params.OrderStatus.SEND_GOODS_BUT_NOT_FUND.value,
-                    global_params.OrderStatus.WAIT_BUYER_RECEIVE.value,
-                    global_params.OrderStatus.CONFIRM_GOODS_BUT_NOT_FUND.value,
-                    global_params.OrderStatus.SEND_GOODS_BUT_NOT_FUND.value]
-    # order_status = [global_params.OrderStatus.WAIT_SELLER_SEND.value]
+    order_status = {global_params.OrderStatus.ALL.value}
     filter_tags = [global_params.OrderTags.BLUE.value, global_params.OrderTags.GREEN.value]
     cloth_trade_manager.set_params(shop_names=shop_names, start_time=start_time, end_time=end_time,
                                    order_status=order_status, filter_tags=filter_tags)
