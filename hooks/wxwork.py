@@ -81,10 +81,9 @@ def formate_single_message(shop_name, sale_amount, refund_amount):
     return res
 
 
-def formate_all_message(amount):
-    today = datetime.strptime(str(date.today()), "%Y-%m-%d")
-    time = today + timedelta(days=-1)
-    header = "# **销售汇算**\n" + "#### **1688平台**\n " + time.strftime("%Y-%m-%d" + "\n")
+def formate_all_message(amount, start_time, end_time):
+    header = "# **销售汇算**\n" + "#### **1688平台**\n " + start_time.strftime("%Y-%m-%d") + " 到 " + end_time.strftime(
+        "%Y-%m-%d" + "\n")
     tailer = ""
 
     total_message = ""
@@ -140,7 +139,7 @@ def start():
                                    order_status=order_status, filter_tags=filter_tags)
 
     amount_res = cloth_trade_manager.get_sales_amount()
-    message = formate_all_message(amount_res)
+    message = formate_all_message(amount_res, start_time, end_time)
 
     send_md(webhook, message)
 
