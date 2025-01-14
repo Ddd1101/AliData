@@ -1,8 +1,6 @@
 import sys
 import os
 
-from common.order_amount import OrderAmount
-
 # 获取当前文件的目录
 current_dir = os.path.dirname(os.path.abspath(__file__))
 # 获取上一层目录
@@ -18,6 +16,7 @@ import requests
 import json
 import global_params
 from manager.cloth_trade_manager import ClothTradeManager
+from common.order_amount import OrderAmount
 
 
 # 发送文本消息
@@ -122,13 +121,13 @@ def formate_all_message_for_other(amount, start_time, end_time):
 
 
 def start():
-    webhook = "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=c8732431-40a3-4915-b117-76940eacca18"
-    # webhook = "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=60d040d5-9595-490f-82ec-962b10cdf3e3"
+    # webhook = "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=c8732431-40a3-4915-b117-76940eacca18"
+    webhook = "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=60d040d5-9595-490f-82ec-962b10cdf3e3"
     todayTmp = datetime.strptime(str(date.today()), "%Y-%m-%d")
-    start_time = todayTmp + timedelta(days =-1)
-    end_time = todayTmp + timedelta(days= 0)
-    # start_time = datetime(2024, 12, 1)
-    # end_time = datetime(2025, 1, 13)
+    start_time = todayTmp + timedelta(days=0)
+    end_time = todayTmp + timedelta(days=1)
+    # start_time = datetime(2024, 1, 1)
+    # end_time = datetime(2025, 1, 30)
     cloth_trade_manager = ClothTradeManager()
 
     shop_names = ["万盈饰品厂", "联球制衣厂", "朝雄制衣厂", "朝瑞制衣厂"]
@@ -144,13 +143,13 @@ def start():
 
 
 def compare():
-    webhook = "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=fe36a783-b9a2-4382-9726-6879ec2ae840"
-    # webhook = "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=60d040d5-9595-490f-82ec-962b10cdf3e3"
+    # webhook = "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=fe36a783-b9a2-4382-9726-6879ec2ae840"
+    webhook = "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=60d040d5-9595-490f-82ec-962b10cdf3e3"
     todayTmp = datetime.strptime(str(date.today()), "%Y-%m-%d")
-    start_time = todayTmp + timedelta(days=-1)
-    end_time = todayTmp + timedelta(days=-0)
-    # start_time = datetime(2024, 12, 1)
-    # end_time = datetime(2025, 1, 13)
+    start_time = todayTmp + timedelta(days=0)
+    end_time = todayTmp + timedelta(days=1)
+    # start_time = datetime(2024, 1, 1)
+    # end_time = datetime(2025, 1, 30)
     cloth_trade_manager = ClothTradeManager()
 
     shop_names = ["万盈饰品厂", "义乌睿得", "义乌茜阳"]
@@ -165,19 +164,19 @@ def compare():
     send_md(webhook, message)
 
 
-# other()
+compare()
 
-# start()
+start()
 
-if __name__ == "__main__":
-    # 设置每日零点执行任务
-    schedule.every().day.at("00:00").do(start)
-
-    schedule.every().day.at("00:00").do(compare)
-
-    print("定时任务已设置")
-
-    while True:
-        # 检查并执行任务
-        schedule.run_pending()
-        time.sleep(1)
+# if __name__ == "__main__":
+#     # 设置每日零点执行任务
+#     schedule.every().day.at("00:00").do(start)
+#
+#     schedule.every().day.at("00:00").do(compare)
+#
+#     print("定时任务已设置")
+#
+#     while True:
+#         # 检查并执行任务
+#         schedule.run_pending()
+#         time.sleep(1)
