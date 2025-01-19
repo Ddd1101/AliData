@@ -4,6 +4,8 @@ class Settings:
                  start_time,
                  end_time,
                  order_status: list,
+                 pay_start_time=None,
+                 pay_end_time=None,
                  is_print_unit_price=False,
                  filter_tags=None,
                  limit_delivered_ime=None):
@@ -19,3 +21,5 @@ class Settings:
         self.limit_delivered_ime = limit_delivered_ime
         self.filter_tags = filter_tags
         self.is_print_unit_price = is_print_unit_price
+        self.pay_start_time = pay_start_time
+        self.pay_end_time = pay_end_time

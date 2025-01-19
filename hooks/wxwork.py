@@ -121,11 +121,11 @@ def formate_all_message_for_other(amount, start_time, end_time):
 
 
 def start():
-    webhook = "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=c8732431-40a3-4915-b117-76940eacca18"
-    # webhook = "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=60d040d5-9595-490f-82ec-962b10cdf3e3"
+    # webhook = "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=c8732431-40a3-4915-b117-76940eacca18"
+    webhook = "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=60d040d5-9595-490f-82ec-962b10cdf3e3"
     todayTmp = datetime.strptime(str(date.today()), "%Y-%m-%d")
-    start_time = todayTmp + timedelta(days=-1)
-    end_time = todayTmp + timedelta(days=0)
+    start_time = todayTmp + timedelta(days=0)
+    end_time = todayTmp + timedelta(days=1)
     # start_time = datetime(2024, 1, 1)
     # end_time = datetime(2025, 1, 30)
     cloth_trade_manager = ClothTradeManager()
@@ -164,19 +164,19 @@ def compare():
     send_md(webhook, message)
 
 
-# compare()
+compare()
 #
 # start()
 
-if __name__ == "__main__":
-    # 设置每日零点执行任务
-    schedule.every().day.at("00:00").do(start)
-
-    schedule.every().day.at("00:00").do(compare)
-
-    print("定时任务已设置")
-
-    while True:
-        # 检查并执行任务
-        schedule.run_pending()
-        time.sleep(1)
+# if __name__ == "__main__":
+#     # 设置每日零点执行任务
+#     schedule.every().day.at("00:00").do(start)
+#
+#     schedule.every().day.at("00:00").do(compare)
+#
+#     print("定时任务已设置")
+#
+#     while True:
+#         # 检查并执行任务
+#         schedule.run_pending()
+#         time.sleep(1)

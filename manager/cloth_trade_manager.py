@@ -21,7 +21,8 @@ class ClothTradeManager:
         self.need_process_order_count = None
         self.price_worksheet = ClothWorksheet(global_params.price_path, global_params.ShopType.ALI_CHILD_CLOTH)
 
-    def set_params(self, start_time, end_time, shop_names: list, order_status: list, filter_tags: list):
+    def set_params(self, start_time, end_time, shop_names: list, order_status: list, filter_tags: list,
+                   pay_start_time=None, pay_end_time=None):
         # 开始时间
         self.start_time = api.formate_date(start_time)
         # 结束时间
@@ -50,10 +51,12 @@ class ClothTradeManager:
         self.get_all_origin_order_list()
         # 过滤标签
         amount = {}
+        order_count = 0
         for shop_name in self.settings.shop_names:
             amount[shop_name] = OrderAmount()
         for shop_name in self.origin_orders:
             print("订单数： " + str(len(self.origin_orders[shop_name])))
+            flag = False
             for order in self.origin_orders[shop_name]:
                 single_order_amount = self.get_single_order_amount(order)
                 if single_order_amount != None:
@@ -64,23 +67,50 @@ class ClothTradeManager:
                     amount[shop_name].refund_shipping_fee += single_order_amount.refund_shipping_fee
                     amount[shop_name].order_count += 1
 
-                    if single_order_amount.total_amount >= single_order_amount.refund and single_order_amount.total_amount > 1000:
-                        print("订单销售额：" + str(round(single_order_amount.total_amount, 2)) + " 退款额： " + str(
-                            round(single_order_amount.refund, 2)))
+                    # print(order)
+
+                    if single_order_amount.total_amount > 500:
+                        print(single_order_amount.total_amount)
                         print(order)
 
-            print(amount[shop_name].total_amount, amount[shop_name].refund)
+                    # if flag == False:
+                    #     print(order)
+                    #     flag = True
+
+                    # if single_order_amount.total_amount >= single_order_amount.refund and single_order_amount.total_amount > 500:
+                    #     print("订单销售额：" + str(round(single_order_amount.total_amount, 2)) + " 退款额： " + str(
+                    #         round(single_order_amount.refund, 2)))
+                    # print(order["baseInfo"]["buyerOpenUid"])
+
+                    # if order["baseInfo"]["buyerOpenUid"] == "BBBfrPvXggv5EDP_JBlqVAVXQ":
+                    #     print (order)
+                    #
+                    # if order["baseInfo"]["buyerOpenUid"] not in puyer_name:
+                    #     puyer_name[order["baseInfo"]["buyerOpenUid"]] = 0
+                    #
+                    # puyer_name[order["baseInfo"]["buyerOpenUid"]] += 1
+
+                    # print(order["baseInfo"]["totalAmount"],order["baseInfo"]["shippingFee"])
+
+            print(amount[shop_name].total_amount, amount[shop_name].refund,
+                  amount[shop_name].total_amount - amount[shop_name].refund, amount[shop_name].order_count)
+            # # pprint(puyer_name)
+
         return amount
 
     #
     def get_single_order_amount(self, order):
         order_status = order["baseInfo"]["status"]
 
+        print(order_status)
+
         is_available_order = False
 
         if global_params.OrderStatus.ALL.value in self.settings.order_status:
             is_available_order = True
-        elif order_status in self.settings.order_status:
+
+        if order_status in self.settings.order_status:
+            print("11")
             is_available_order = True
 
         # 订单不统计直接返回空值
@@ -142,7 +172,7 @@ class ClothTradeManager:
                 has_refund = True
                 product_items = order["productItems"]
                 refund_amount = self.get_refund_amount_info_by_product_items(product_items)
-                pprint(refund_amount)
+                # pprint(refund_amount)
 
         # 首先获取订单参数
         amount.id = order["baseInfo"]["id"]
@@ -167,7 +197,7 @@ class ClothTradeManager:
                 has_refund = True
                 product_items = order["productItems"]
                 refund_amount = self.get_refund_amount_info_by_product_items(product_items)
-                pprint(refund_amount)
+                # pprint(refund_amount)
 
         # 首先获取订单参数
         amount.id = order["baseInfo"]["id"]
@@ -232,6 +262,8 @@ class ClothTradeManager:
                 "createEndTime": self.settings.end_time.strip(),
                 "orderStatus": order_status,  # 只获取已发出 或者 已签收  todo：或者已完成未到账 或者已完成
                 # "refundStatus": "refundsuccess",
+                "buyerMemberId": "memberId",
+                "buyerLoginId": "LoginId",
                 "needMemoInfo": "true",
                 "pageSize": 20
             }
@@ -254,6 +286,8 @@ class ClothTradeManager:
                         "createEndTime": self.settings.end_time.strip(),
                         "orderStatus": order_status,  # 只获取已发出 或者 已签收  todo：或者已完成未到账 或者已完成
                         # "refundStatus":"refundsuccess",
+                        "buyerMemberId": "memberId",
+                        "buyerLoginId": "LoginId",
                         "needMemoInfo": "true",
                         "pageSize": 20
                     }
@@ -283,6 +317,7 @@ class ClothTradeManager:
             "createEndTime": self.settings.end_time.strip(),
             "needMemoInfo": "true",
             "needBuyerAddressAndPhone": "true",
+            # "isHis":"true",
             "pageSize": 20
         }
         # 2. 遍历店铺
@@ -304,6 +339,7 @@ class ClothTradeManager:
                     "createEndTime": self.settings.end_time.strip(),
                     "needMemoInfo": "true",
                     "needBuyerAddressAndPhone": "true",
+                    # "isHis": "true",
                     "pageSize": 20
                 }
                 # print(req_data)
@@ -345,4 +381,7 @@ class ClothTradeManager:
         pass
 
     def get_deliver_info(self):
+        pass
+
+    def get_history_orders(self):
         pass
