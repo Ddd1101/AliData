@@ -1,5 +1,5 @@
 import hmac
-from datetime import datetime
+from datetime import datetime, timezone
 
 import global_params
 import time
@@ -132,3 +132,9 @@ def formate_date(date: datetime):
     month = date.month
     day = date.day
     return datetime(int(year), int(month), int(day)).strftime("%Y%m%d") + "000000000+0800"
+
+def de_formate_time(date_str):
+    # 先解析字符串中的日期和时间部分
+    dt = datetime.strptime(date_str[:-5], "%Y%m%d%H%M%S%f")
+
+    return dt
