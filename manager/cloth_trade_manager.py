@@ -19,12 +19,29 @@ class ClothTradeManager:
         self.start_time = None
         self.end_time = None
         self.need_process_order_count = None
-        self.price_worksheet = ClothWorksheet(global_params.price_path, global_params.ShopType.ALI_CHILD_CLOTH)
+        self.price_worksheet = ClothWorksheet(
+            global_params.price_path, global_params.ShopType.ALI_CHILD_CLOTH
+        )
 
-    def set_params(self, start_time, end_time, shop_names: list, order_status: list, filter_tags: list,
-                   pay_start_time=None, pay_end_time=None):
+    def set_params(
+        self,
+        start_time,
+        end_time,
+        shop_names: list,
+        order_status: list,
+        filter_tags: list,
+        pay_start_time=None,
+        pay_end_time=None,
+    ):
         # 其他参数设置
-        self.settings = Settings(shop_names=shop_names, start_time=start_time, end_time=end_time,order_status=order_status, limit_delivered_ime=[], filter_tags=filter_tags)
+        self.settings = Settings(
+            shop_names=shop_names,
+            start_time=start_time,
+            end_time=end_time,
+            order_status=order_status,
+            limit_delivered_ime=[],
+            filter_tags=filter_tags,
+        )
 
         self.origin_orders = {}
         for shop_name in shop_names:
@@ -55,22 +72,27 @@ class ClothTradeManager:
             for order in self.origin_orders[shop_name]:
                 single_order_amount = self.get_single_order_amount(order)
                 if single_order_amount != None:
-                    amount[shop_name].sum_product_payment += single_order_amount.sum_product_payment
+                    amount[
+                        shop_name
+                    ].sum_product_payment += single_order_amount.sum_product_payment
                     amount[shop_name].shipping_fee += single_order_amount.shipping_fee
                     amount[shop_name].total_amount += single_order_amount.total_amount
                     amount[shop_name].refund += single_order_amount.refund
-                    amount[shop_name].refund_shipping_fee += single_order_amount.refund_shipping_fee
+                    amount[
+                        shop_name
+                    ].refund_shipping_fee += single_order_amount.refund_shipping_fee
                     amount[shop_name].order_count += 1
 
-                    print(order)
-                    print("=============================")
+                    # if single_order_amount.total_amount > 500:
+                    #     print(single_order_amount.total_amount)
+                    #     print(order)
 
-                    if single_order_amount.total_amount > 500:
-                        print(single_order_amount.total_amount)
-                        print(order)
-
-            print(amount[shop_name].total_amount, amount[shop_name].refund,
-                  amount[shop_name].total_amount - amount[shop_name].refund, amount[shop_name].order_count)
+            print(
+                amount[shop_name].total_amount,
+                amount[shop_name].refund,
+                amount[shop_name].total_amount - amount[shop_name].refund,
+                amount[shop_name].order_count,
+            )
 
         return amount
 
@@ -79,6 +101,14 @@ class ClothTradeManager:
         order_status = order["baseInfo"]["status"]
 
         is_available_order = False
+
+        # 判断付款时间
+        if "payTime" in order["baseInfo"]:
+            pay_time = api.de_formate_time(order["baseInfo"]["payTime"])
+            if not (
+                self.settings.order_start_time <= pay_time < self.settings.end_time
+            ):
+                return None
 
         if global_params.OrderStatus.ALL.value in self.settings.order_status:
             is_available_order = True
@@ -131,7 +161,9 @@ class ClothTradeManager:
         amount.shipping_fee = round(order["baseInfo"]["shippingFee"], 2)
         amount.total_amount = round(order["baseInfo"]["totalAmount"], 2)
         amount.refund = round(order["baseInfo"]["refund"], 2)
-        amount.refund_shipping_fee = round(amount.refund - amount.total_amount + amount.shipping_fee, 2)
+        amount.refund_shipping_fee = round(
+            amount.refund - amount.total_amount + amount.shipping_fee, 2
+        )
 
         return amount
 
@@ -144,7 +176,9 @@ class ClothTradeManager:
             if order["baseInfo"]["refundStatus"] == "waitselleragree":
                 has_refund = True
                 product_items = order["productItems"]
-                refund_amount = self.get_refund_amount_info_by_product_items(product_items)
+                refund_amount = self.get_refund_amount_info_by_product_items(
+                    product_items
+                )
                 # pprint(refund_amount)
 
         # 首先获取订单参数
@@ -169,7 +203,9 @@ class ClothTradeManager:
             if order["baseInfo"]["refundStatus"] == "waitselleragree":
                 has_refund = True
                 product_items = order["productItems"]
-                refund_amount = self.get_refund_amount_info_by_product_items(product_items)
+                refund_amount = self.get_refund_amount_info_by_product_items(
+                    product_items
+                )
                 # pprint(refund_amount)
 
         # 首先获取订单参数
@@ -188,7 +224,10 @@ class ClothTradeManager:
     def get_refund_amount_info_by_product_items(self, product_items):
         all_amount = {"normal_amount": 0, "refund_amount": 0}
         for product_item in product_items:
-            if "refundStatus" in product_item and product_item["refundStatus"] == "WAIT_SELLER_AGREE":
+            if (
+                "refundStatus" in product_item
+                and product_item["refundStatus"] == "WAIT_SELLER_AGREE"
+            ):
                 all_amount["refund_amount"] += product_item["itemAmount"]
             else:
                 all_amount["normal_amount"] += product_item["itemAmount"]
@@ -238,7 +277,7 @@ class ClothTradeManager:
                 "buyerMemberId": "memberId",
                 "buyerLoginId": "LoginId",
                 "needMemoInfo": "true",
-                "pageSize": 20
+                "pageSize": 20,
             }
             # 2. 遍历店铺
             for shop_name in self.settings.shop_names:
@@ -262,7 +301,7 @@ class ClothTradeManager:
                         "buyerMemberId": "memberId",
                         "buyerLoginId": "LoginId",
                         "needMemoInfo": "true",
-                        "pageSize": 20
+                        "pageSize": 20,
                     }
                     # print(req_data)
                     res = api.GetTradeData(req_data, shop_name)
@@ -271,8 +310,10 @@ class ClothTradeManager:
                         # print(order)
                         # 过滤掉刷单
                         if ("sellerRemarkIcon" in order["baseInfo"]) and (
-                                order["baseInfo"]["sellerRemarkIcon"] == global_params.OrderTags.BLUE.value
-                                or order["baseInfo"]["sellerRemarkIcon"] == global_params.OrderTags.GREEN.value
+                            order["baseInfo"]["sellerRemarkIcon"]
+                            == global_params.OrderTags.BLUE.value
+                            or order["baseInfo"]["sellerRemarkIcon"]
+                            == global_params.OrderTags.GREEN.value
                         ):
                             self.shuadan_orders += order
                             continue
@@ -291,7 +332,7 @@ class ClothTradeManager:
             "needMemoInfo": "true",
             "needBuyerAddressAndPhone": "true",
             # "isHis":"true",
-            "pageSize": 20
+            "pageSize": 20,
         }
         # 2. 遍历店铺
         for shop_name in self.settings.shop_names:
@@ -313,7 +354,7 @@ class ClothTradeManager:
                     "needMemoInfo": "true",
                     "needBuyerAddressAndPhone": "true",
                     # "isHis": "true",
-                    "pageSize": 20
+                    "pageSize": 20,
                 }
                 # print(req_data)
                 res = api.GetTradeData(req_data, shop_name)
@@ -322,11 +363,14 @@ class ClothTradeManager:
                     # print(order)
                     # 过滤掉刷单
                     if ("sellerRemarkIcon" in order["baseInfo"]) and (
-                            order["baseInfo"]["sellerRemarkIcon"] == global_params.OrderTags.BLUE.value
-                            or order["baseInfo"]["sellerRemarkIcon"] == global_params.OrderTags.GREEN.value
+                        order["baseInfo"]["sellerRemarkIcon"]
+                        == global_params.OrderTags.BLUE.value
+                        or order["baseInfo"]["sellerRemarkIcon"]
+                        == global_params.OrderTags.GREEN.value
                     ):
                         self.shuadan_orders += order
                         continue
+
                     # todo: 做一个单独的过滤方法 过滤红 或者 黄标签
                     self.origin_orders[shop_name].append(order)
 

@@ -24,7 +24,9 @@ def CalculateSignature(urlPath, data, shopName):
     mergedParams = bytes(mergedParams, "utf8")
 
     # 执行hmac_sha1算法 && 转为16进制
-    hex_res1 = hmac.new(global_params.AppSecret[shopName], mergedParams, digestmod="sha1").hexdigest()
+    hex_res1 = hmac.new(
+        global_params.AppSecret[shopName], mergedParams, digestmod="sha1"
+    ).hexdigest()
 
     # 转为全大写字符
     hex_res1 = hex_res1.upper()
@@ -36,16 +38,18 @@ def CalculateSignature(urlPath, data, shopName):
 def GetTradeData(data, shopName):
     data["access_token"] = global_params.access_token[shopName]
     _aop_signature = CalculateSignature(
-        global_params.request_type["trade"] + "alibaba.trade.getSellerOrderList/" + global_params.AppKey[shopName],
+        global_params.request_type["trade"]
+        + "alibaba.trade.getSellerOrderList/"
+        + global_params.AppKey[shopName],
         data,
         shopName,
     )
     data["_aop_signature"] = _aop_signature
     url = (
-            global_params.base_url
-            + global_params.request_type["trade"]
-            + "alibaba.trade.getSellerOrderList/"
-            + global_params.AppKey[shopName]
+        global_params.base_url
+        + global_params.request_type["trade"]
+        + "alibaba.trade.getSellerOrderList/"
+        + global_params.AppKey[shopName]
     )
     try:
         res = requests.post(url, data=data)
@@ -68,10 +72,10 @@ def GetDeliveryData(data, shopName):
     data["_aop_signature"] = _aop_signature
 
     url = (
-            global_params.base_url
-            + global_params.request_type["delivery"]
-            + "alibaba.trade.getLogisticsInfos.sellerView/"
-            + global_params.AppKey[shopName]
+        global_params.base_url
+        + global_params.request_type["delivery"]
+        + "alibaba.trade.getLogisticsInfos.sellerView/"
+        + global_params.AppKey[shopName]
     )
 
     res = requests.post(url, data=data)
@@ -97,10 +101,10 @@ def GetDeliveryTraceData(data, shopName):
     )
     data["_aop_signature"] = _aop_signature
     url = (
-            global_params.base_url
-            + global_params.request_type["delivery"]
-            + "alibaba.trade.getLogisticsTraceInfo.sellerView/"
-            + global_params.AppKey[shopName]
+        global_params.base_url
+        + global_params.request_type["delivery"]
+        + "alibaba.trade.getLogisticsTraceInfo.sellerView/"
+        + global_params.AppKey[shopName]
     )
 
     response = requests.post(url, data=data)
@@ -111,16 +115,18 @@ def GetDeliveryTraceData(data, shopName):
 def GetSingleTradeData(data, shopName):
     data["access_token"] = global_params.access_token[shopName]
     _aop_signature = CalculateSignature(
-        global_params.request_type["trade"] + "alibaba.trade.get.sellerView/" + global_params.AppKey[shopName],
+        global_params.request_type["trade"]
+        + "alibaba.trade.get.sellerView/"
+        + global_params.AppKey[shopName],
         data,
         shopName,
     )
     data["_aop_signature"] = _aop_signature
     url = (
-            global_params.base_url
-            + global_params.request_type["trade"]
-            + "alibaba.trade.get.sellerView/"
-            + global_params.AppKey[shopName]
+        global_params.base_url
+        + global_params.request_type["trade"]
+        + "alibaba.trade.get.sellerView/"
+        + global_params.AppKey[shopName]
     )
     res = requests.post(url, data=data)
 
@@ -131,7 +137,10 @@ def formate_date(date: datetime):
     year = date.year
     month = date.month
     day = date.day
-    return datetime(int(year), int(month), int(day)).strftime("%Y%m%d") + "000000000+0800"
+    return (
+        datetime(int(year), int(month), int(day)).strftime("%Y%m%d") + "000000000+0800"
+    )
+
 
 def de_formate_time(date_str):
     # 先解析字符串中的日期和时间部分

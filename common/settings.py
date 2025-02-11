@@ -2,15 +2,18 @@ from datetime import timedelta, datetime
 
 import utils.ali_api as api
 
+
 class Settings:
-    def __init__(self,
-                 shop_names,
-                 start_time: datetime,
-                 end_time,
-                 order_status: list,
-                 is_print_unit_price=False,
-                 filter_tags=None,
-                 limit_delivered_ime=None):
+    def __init__(
+        self,
+        shop_names,
+        start_time: datetime,
+        end_time,
+        order_status: list,
+        is_print_unit_price=False,
+        filter_tags=None,
+        limit_delivered_ime=None,
+    ):
         if filter_tags is None:
             filter_tags = []
         if limit_delivered_ime is None:
