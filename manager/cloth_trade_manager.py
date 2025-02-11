@@ -23,13 +23,8 @@ class ClothTradeManager:
 
     def set_params(self, start_time, end_time, shop_names: list, order_status: list, filter_tags: list,
                    pay_start_time=None, pay_end_time=None):
-        # 开始时间
-        self.start_time = api.formate_date(start_time)
-        # 结束时间
-        self.end_time = api.formate_date(end_time)
         # 其他参数设置
-        self.settings = Settings(shop_names=shop_names, start_time=self.start_time, end_time=self.end_time,
-                                 order_status=order_status, limit_delivered_ime=[], filter_tags=filter_tags)
+        self.settings = Settings(shop_names=shop_names, start_time=start_time, end_time=end_time,order_status=order_status, limit_delivered_ime=[], filter_tags=filter_tags)
 
         self.origin_orders = {}
         for shop_name in shop_names:
@@ -67,34 +62,15 @@ class ClothTradeManager:
                     amount[shop_name].refund_shipping_fee += single_order_amount.refund_shipping_fee
                     amount[shop_name].order_count += 1
 
-                    # print(order)
+                    print(order)
+                    print("=============================")
 
                     if single_order_amount.total_amount > 500:
                         print(single_order_amount.total_amount)
                         print(order)
 
-                    # if flag == False:
-                    #     print(order)
-                    #     flag = True
-
-                    # if single_order_amount.total_amount >= single_order_amount.refund and single_order_amount.total_amount > 500:
-                    #     print("订单销售额：" + str(round(single_order_amount.total_amount, 2)) + " 退款额： " + str(
-                    #         round(single_order_amount.refund, 2)))
-                    # print(order["baseInfo"]["buyerOpenUid"])
-
-                    # if order["baseInfo"]["buyerOpenUid"] == "BBBfrPvXggv5EDP_JBlqVAVXQ":
-                    #     print (order)
-                    #
-                    # if order["baseInfo"]["buyerOpenUid"] not in puyer_name:
-                    #     puyer_name[order["baseInfo"]["buyerOpenUid"]] = 0
-                    #
-                    # puyer_name[order["baseInfo"]["buyerOpenUid"]] += 1
-
-                    # print(order["baseInfo"]["totalAmount"],order["baseInfo"]["shippingFee"])
-
             print(amount[shop_name].total_amount, amount[shop_name].refund,
                   amount[shop_name].total_amount - amount[shop_name].refund, amount[shop_name].order_count)
-            # # pprint(puyer_name)
 
         return amount
 
@@ -102,15 +78,12 @@ class ClothTradeManager:
     def get_single_order_amount(self, order):
         order_status = order["baseInfo"]["status"]
 
-        print(order_status)
-
         is_available_order = False
 
         if global_params.OrderStatus.ALL.value in self.settings.order_status:
             is_available_order = True
 
         if order_status in self.settings.order_status:
-            print("11")
             is_available_order = True
 
         # 订单不统计直接返回空值
@@ -313,8 +286,8 @@ class ClothTradeManager:
     def get_all_origin_order_list(self):
         print("start get_all_origin_order_list")
         req_data = {
-            "createStartTime": self.settings.start_time.strip(),
-            "createEndTime": self.settings.end_time.strip(),
+            "createStartTime": self.settings.start_time_str.strip(),
+            "createEndTime": self.settings.end_time_str.strip(),
             "needMemoInfo": "true",
             "needBuyerAddressAndPhone": "true",
             # "isHis":"true",
@@ -335,8 +308,8 @@ class ClothTradeManager:
             for pageId in range(page_num):
                 req_data = {
                     "page": str(pageId + 1),
-                    "createStartTime": self.settings.start_time.strip(),
-                    "createEndTime": self.settings.end_time.strip(),
+                    "createStartTime": self.settings.start_time_str.strip(),
+                    "createEndTime": self.settings.end_time_str.strip(),
                     "needMemoInfo": "true",
                     "needBuyerAddressAndPhone": "true",
                     # "isHis": "true",

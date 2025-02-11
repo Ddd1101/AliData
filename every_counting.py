@@ -7,14 +7,14 @@ if __name__ == "__main__":
     todayTmp = datetime.strptime(str(date.today()), "%Y-%m-%d")
     # start_time = todayTmp + timedelta(days=-1)
     # end_time = todayTmp + timedelta(days=0)
-    start_time = datetime(2024, 1, 1)
-    end_time = datetime(2025, 2, 1)
+    start_time = datetime(2025, 2, 1)
+    end_time = datetime(2025, 3, 1)
     cloth_trade_manager = ClothTradeManager()
 
     # shop_names = ["","万盈饰品厂"]
     # shop_names = ["联球制衣厂", "朝雄制衣厂", "朝瑞制衣厂", "万盈饰品厂"]
 
-    shop_names = ["联球制衣厂"]
+    shop_names = ["联球饰品厂"]
 
     # order_status = {global_params.OrderStatus.TRADE_SUCCESS.value, global_params.OrderStatus.TRADE_CANCEL.value,
     #                 global_params.OrderStatus.WAIT_SELLER_SEND.value,
@@ -22,7 +22,7 @@ if __name__ == "__main__":
     #                 global_params.OrderStatus.CONFIRM_GOODS_BUT_NOT_FUND.value,
     #                 global_params.OrderStatus.SEND_GOODS_BUT_NOT_FUND.value}
 
-    order_status = [global_params.OrderStatus.SEND_GOODS_BUT_NOT_FUND.value]
+    order_status = [global_params.OrderStatus.WAIT_BUYER_RECEIVE.value]
 
     # order_status = {global_params.OrderStatus.ALL.value}
     filter_tags = [global_params.OrderTags.BLUE.value, global_params.OrderTags.GREEN.value]
