@@ -84,8 +84,17 @@ class ClothTradeManager:
                     amount[shop_name].order_count += 1
 
                     # if single_order_amount.total_amount > 500:
+                    #     print("================================")
                     #     print(single_order_amount.total_amount)
                     #     print(order)
+
+                    #     print("================================")
+
+                    # print("================================")
+                    # print(single_order_amount.total_amount)
+                    # print(order)
+
+                    # print("================================")
 
             print(
                 amount[shop_name].total_amount,
