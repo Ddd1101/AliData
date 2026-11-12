@@ -188,9 +188,9 @@ def compare():
 
 if __name__ == "__main__":
     # 设置每日零点执行任务
-    schedule.every().day.at("00:00").do(start)
+    schedule.every().day.at("00:53").do(start)
 
-    schedule.every().day.at("00:00").do(compare)
+    schedule.every().day.at("00:53").do(compare)
 
     print("定时任务已设置")
 

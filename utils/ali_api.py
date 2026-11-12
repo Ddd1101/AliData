@@ -53,6 +53,8 @@ def GetTradeData(data, shopName):
     )
     try:
         res = requests.post(url, data=data)
+        print(url)
+        print(data)
     except Exception as e:
         print("post error ", e)
 
@@ -128,6 +130,11 @@ def GetSingleTradeData(data, shopName):
         + "alibaba.trade.get.sellerView/"
         + global_params.AppKey[shopName]
     )
+
+    print("===================")
+    print(url)
+    print(data)
+
     res = requests.post(url, data=data)
 
     return res.json()

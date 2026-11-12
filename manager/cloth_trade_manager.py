@@ -3,11 +3,16 @@ from pprint import pprint
 
 import utils.ali_api as api
 import global_params
+import openpyxl
+import re
 from common.order_amount import OrderAmount
 from common.settings import Settings
 from utils import utils
 from datetime import datetime, date, timedelta
 from utils.cloth_worksheet import ClothWorksheet
+
+# 运费成本（固定，每单）
+SHIPPING_COST = 2.2
 
 
 class ClothTradeManager:
@@ -89,12 +94,6 @@ class ClothTradeManager:
                     #     print(order)
 
                     #     print("================================")
-
-                    # print("================================")
-                    # print(single_order_amount.total_amount)
-                    # print(order)
-
-                    # print("================================")
 
             print(
                 amount[shop_name].total_amount,
@@ -266,8 +265,171 @@ class ClothTradeManager:
         return amount
 
     # 获取利润
-    def get_profit(self):
-        self.check_orders()
+    def _get_sku_size(self, sku_infos):
+        """从 skuInfos 中按名字定位尺码，避免硬编码下标"""
+        for info in sku_infos or []:
+            name = info.get("name", "") or ""
+            if any(k in name for k in ("身高", "尺码", "规格", "尺寸", "码")):
+                return info.get("value", "")
+        if len(sku_infos or []) >= 2:
+            return sku_infos[1].get("value", "")
+        if len(sku_infos or []) == 1:
+            return sku_infos[0].get("value", "")
+        return ""
+
+    def _cargo_candidates(self, cargo_number):
+        """候选货号：原编号 -> 去变体后缀 -> 再去字母前缀（如 TZ-220146 -> 220146）"""
+        cands = [cargo_number]
+        base = re.sub(r"-\d{1,3}$", "", cargo_number)
+        if base != cargo_number:
+            cands.append(base)
+        stripped = re.sub(r"^[A-Za-z]+-", "", base)
+        if stripped != base:
+            cands.append(stripped)
+        return cands
+
+    def _get_cost_multiplier(self, cargo_number):
+        """特例：TZ-240279-XX 且 XX >= 73 为两条装，成本 * 2"""
+        m = re.search(r"^TZ-240279-(\d{1,3})$", cargo_number)
+        if m:
+            try:
+                if int(m.group(1)) >= 73:
+                    return 2
+            except ValueError:
+                pass
+        return 1
+
+    def get_product_cost(self, product_item):
+        """返回 (成本, 是否缺失成本数据)"""
+        cargo_number = (
+            product_item.get("cargoNumber")
+            or product_item.get("productCargoNumber")
+            or ""
+        )
+        if not cargo_number:
+            return 0, True
+        # 货号匹配：先按完整编号查，再去变体后缀，最后去字母前缀（如 TZ-220146 -> 220146）
+        cargo_set = self.price_worksheet.get_cargo_number_set()
+        base_number = cargo_number
+        for cand in self._cargo_candidates(cargo_number):
+            if cand in cargo_set:
+                base_number = cand
+                break
+
+        size = self._get_sku_size(product_item.get("skuInfos"))
+        unit_cost, found = self.price_worksheet.find_price(base_number, size)
+        multiplier = self._get_cost_multiplier(cargo_number)
+        quantity = product_item.get("quantity", 1) or 1
+        return round(unit_cost * quantity * multiplier, 2), (not found)
+
+    # 单笔订单利润
+    def get_single_order_profit(self, order):
+        base = order["baseInfo"]
+        total_amount = round(base.get("totalAmount", 0) or 0, 2)  # 商品总收款
+        shipping_fee = round(base.get("shippingFee", 0) or 0, 2)  # 运费
+        refund = round(base.get("refund", 0) or 0, 2)  # 总退款
+        # 成本：读价格表计算，只统计未退款的 SKU；同时收集缺失成本的货号
+        cost = 0.0
+        missing_items = []
+        for i in order.get("productItems", []):
+            if (i.get("refund", 0) or 0) != 0:
+                continue
+            c, is_missing = self.get_product_cost(i)
+            cost += c
+            if is_missing:
+                missing_items.append(
+                    i.get("cargoNumber") or i.get("productCargoNumber") or ""
+                )
+        cost = round(cost, 2)
+
+        shipping_cost = SHIPPING_COST  # 运费成本（固定）
+
+        # 利润 = 商品总收款 + 运费 - 总退款 - 成本 - 运费成本
+        profit = round(
+            total_amount + shipping_fee - refund - cost - shipping_cost, 2
+        )
+
+        pay_time = ""
+        if base.get("payTime"):
+            try:
+                pay_time = api.de_formate_time(base["payTime"]).strftime(
+                    "%Y-%m-%d %H:%M:%S"
+                )
+            except Exception:
+                pay_time = base["payTime"]
+
+        return {
+            "order_id": base.get("idOfStr", "") or str(base.get("id", "")),
+            "status": base.get("status", ""),
+            "pay_time": pay_time,
+            "total_amount": total_amount,
+            "shipping_fee": shipping_fee,
+            "refund": refund,
+            "cost": cost,
+            "shipping_cost": shipping_cost,
+            "profit": profit,
+            "missing_items": missing_items,
+        }
+
+    # 导出每单利润到 Excel
+    def export_profit_to_excel(self, filepath=None):
+        if not self.hasGetOrders:
+            self.get_all_origin_order_list()
+        headers = [
+            "店铺",
+            "订单号",
+            "状态",
+            "支付时间",
+            "商品总收款",
+            "运费",
+            "总退款",
+            "成本",
+            "运费成本",
+            "利润",
+            "成本缺失",
+        ]
+        rows = []
+        for shop_name, orders in self.origin_orders.items():
+            for order in orders:
+                info = self.get_single_order_profit(order)
+                missing_mark = (
+                    "缺:" + ",".join(info["missing_items"])
+                    if info["missing_items"]
+                    else ""
+                )
+                rows.append(
+                    [
+                        shop_name,
+                        info["order_id"],
+                        info["status"],
+                        info["pay_time"],
+                        info["total_amount"],
+                        info["shipping_fee"],
+                        info["refund"],
+                        info["cost"],
+                        info["shipping_cost"],
+                        info["profit"],
+                        missing_mark,
+                    ]
+                )
+
+        if filepath is None:
+            filepath = (
+                global_params.path
+                + "/每单利润_"
+                + datetime.now().strftime("%Y%m%d_%H%M%S")
+                + ".xlsx"
+            )
+
+        wb = openpyxl.Workbook()
+        ws = wb.active
+        ws.title = "每单利润"
+        ws.append(headers)
+        for row in rows:
+            ws.append(row)
+        wb.save(filepath)
+        print("已导出每单利润: " + filepath)
+        return filepath
 
     def get_fake_order(self):
         self.check_orders()
@@ -316,16 +478,15 @@ class ClothTradeManager:
                     res = api.GetTradeData(req_data, shop_name)
                     # 2.2.1 遍历订单
                     for order in res["result"]:
-                        # print(order)
                         # 过滤掉刷单
-                        if ("sellerRemarkIcon" in order["baseInfo"]) and (
-                            order["baseInfo"]["sellerRemarkIcon"]
-                            == global_params.OrderTags.BLUE.value
-                            or order["baseInfo"]["sellerRemarkIcon"]
-                            == global_params.OrderTags.GREEN.value
-                        ):
-                            self.shuadan_orders += order
-                            continue
+                        # if ("sellerRemarkIcon" in order["baseInfo"]) and (
+                        #     order["baseInfo"]["sellerRemarkIcon"]
+                        #     == global_params.OrderTags.BLUE.value
+                        #     or order["baseInfo"]["sellerRemarkIcon"]
+                        #     == global_params.OrderTags.GREEN.value
+                        # ):
+                        #     self.shuadan_orders += order
+                        #     continue
                         # todo: 做一个单独的过滤方法 过滤红 或者 黄标签
                         self.origin_orders[shop_name].append(order)
 
