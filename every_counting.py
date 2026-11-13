@@ -5,8 +5,8 @@ from manager.cloth_trade_manager import ClothTradeManager
 
 if __name__ == "__main__":
     todayTmp = datetime.strptime(str(date.today()), "%Y-%m-%d")
-    # 近 1 个月
-    start_time = todayTmp + timedelta(days=-30)
+    # 9 月 1 日到今天
+    start_time = datetime(todayTmp.year, 9, 1)
     end_time = todayTmp + timedelta(days=1)
     cloth_trade_manager = ClothTradeManager()
 

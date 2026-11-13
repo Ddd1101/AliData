@@ -13,6 +13,8 @@ from utils.cloth_worksheet import ClothWorksheet
 
 # 运费成本（固定，每单）
 SHIPPING_COST = 2.2
+# 平台抽佣比例（按 商品总收款 - 总退款 计算）
+PLATFORM_COMMISSION_RATE = 0.006
 
 
 class ClothTradeManager:
@@ -288,17 +290,6 @@ class ClothTradeManager:
             cands.append(stripped)
         return cands
 
-    def _get_cost_multiplier(self, cargo_number):
-        """特例：TZ-240279-XX 且 XX >= 73 为两条装，成本 * 2"""
-        m = re.search(r"^TZ-240279-(\d{1,3})$", cargo_number)
-        if m:
-            try:
-                if int(m.group(1)) >= 73:
-                    return 2
-            except ValueError:
-                pass
-        return 1
-
     def get_product_cost(self, product_item):
         """返回 (成本, 是否缺失成本数据)"""
         cargo_number = (
@@ -318,9 +309,8 @@ class ClothTradeManager:
 
         size = self._get_sku_size(product_item.get("skuInfos"))
         unit_cost, found = self.price_worksheet.find_price(base_number, size)
-        multiplier = self._get_cost_multiplier(cargo_number)
         quantity = product_item.get("quantity", 1) or 1
-        return round(unit_cost * quantity * multiplier, 2), (not found)
+        return round(unit_cost * quantity, 2), (not found)
 
     # 单笔订单利润
     def get_single_order_profit(self, order):
@@ -343,11 +333,20 @@ class ClothTradeManager:
         cost = round(cost, 2)
 
         shipping_cost = SHIPPING_COST  # 运费成本（固定）
-
-        # 利润 = 商品总收款 + 运费 - 总退款 - 成本 - 运费成本
-        profit = round(
-            total_amount + shipping_fee - refund - cost - shipping_cost, 2
+        # 平台抽佣 =（商品总收款 - 总退款）× 千分之六
+        commission = round(
+            max(total_amount - refund, 0) * PLATFORM_COMMISSION_RATE, 2
         )
+
+        # 利润 = 商品总收款 + 运费 - 总退款 - 成本 - 运费成本 - 平台抽佣
+        profit = round(
+            total_amount + shipping_fee - refund - cost - shipping_cost - commission,
+            2,
+        )
+
+        # 利润率 = 利润 /（商品总收款 + 运费）
+        income = total_amount + shipping_fee
+        profit_rate = round(profit / income, 4) if income else 0
 
         pay_time = ""
         if base.get("payTime"):
@@ -367,12 +366,14 @@ class ClothTradeManager:
             "refund": refund,
             "cost": cost,
             "shipping_cost": shipping_cost,
+            "commission": commission,
             "profit": profit,
+            "profit_rate": profit_rate,
             "missing_items": missing_items,
         }
 
-    # 导出每单利润到 Excel
-    def export_profit_to_excel(self, filepath=None):
+    # 导出每单利润到 Excel；day 传入 "2026-11-13" 时只导出该支付日的订单
+    def export_profit_to_excel(self, filepath=None, day=None):
         if not self.hasGetOrders:
             self.get_all_origin_order_list()
         headers = [
@@ -385,13 +386,17 @@ class ClothTradeManager:
             "总退款",
             "成本",
             "运费成本",
+            "平台抽佣",
             "利润",
+            "利润率",
             "成本缺失",
         ]
         rows = []
         for shop_name, orders in self.origin_orders.items():
             for order in orders:
                 info = self.get_single_order_profit(order)
+                if day and not info["pay_time"].startswith(day):
+                    continue
                 missing_mark = (
                     "缺:" + ",".join(info["missing_items"])
                     if info["missing_items"]
@@ -408,18 +413,23 @@ class ClothTradeManager:
                         info["refund"],
                         info["cost"],
                         info["shipping_cost"],
+                        info["commission"],
                         info["profit"],
+                        info["profit_rate"],
                         missing_mark,
                     ]
                 )
 
         if filepath is None:
-            filepath = (
-                global_params.path
-                + "/每单利润_"
-                + datetime.now().strftime("%Y%m%d_%H%M%S")
-                + ".xlsx"
-            )
+            if day:
+                filepath = global_params.path + "/订单明细_" + day + ".xlsx"
+            else:
+                filepath = (
+                    global_params.path
+                    + "/每单利润_"
+                    + datetime.now().strftime("%Y%m%d_%H%M%S")
+                    + ".xlsx"
+                )
 
         wb = openpyxl.Workbook()
         ws = wb.active
@@ -427,6 +437,10 @@ class ClothTradeManager:
         ws.append(headers)
         for row in rows:
             ws.append(row)
+        # 利润率按百分比显示
+        rate_col = headers.index("利润率") + 1
+        for r in range(2, len(rows) + 2):
+            ws.cell(r, rate_col).number_format = "0.00%"
         wb.save(filepath)
         print("已导出每单利润: " + filepath)
         return filepath
