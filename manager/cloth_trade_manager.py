@@ -4,6 +4,7 @@ from pprint import pprint
 import utils.ali_api as api
 import global_params
 import openpyxl
+from openpyxl.styles import Font, Alignment
 import re
 from common.order_amount import OrderAmount
 from common.settings import Settings
@@ -443,6 +444,104 @@ class ClothTradeManager:
             ws.cell(r, rate_col).number_format = "0.00%"
         wb.save(filepath)
         print("已导出每单利润: " + filepath)
+        return filepath
+
+    # 按支付日汇总总账并导出 Excel
+    def export_daily_summary_to_excel(self, start_day, end_day, filepath=None):
+        if not self.hasGetOrders:
+            self.get_all_origin_order_list()
+        keys = (
+            "total_amount",
+            "shipping_fee",
+            "refund",
+            "cost",
+            "shipping_cost",
+            "commission",
+            "profit",
+        )
+        days = {}
+        for shop_name, orders in self.origin_orders.items():
+            for order in orders:
+                info = self.get_single_order_profit(order)
+                day = info["pay_time"][:10]
+                if not day or day < start_day or day > end_day:
+                    continue
+                d = days.setdefault(day, dict.fromkeys(keys, 0.0))
+                d["order_count"] = d.get("order_count", 0) + 1
+                for k in keys:
+                    d[k] += info[k]
+
+        headers = [
+            "日期",
+            "订单数",
+            "商品总收款",
+            "运费",
+            "总退款",
+            "成本",
+            "运费成本",
+            "平台抽佣",
+            "利润",
+            "利润率",
+        ]
+        rows = []
+        for day in sorted(days):
+            d = days[day]
+            income = d["total_amount"] + d["shipping_fee"]
+            rows.append(
+                [
+                    day,
+                    d["order_count"],
+                    round(d["total_amount"], 2),
+                    round(d["shipping_fee"], 2),
+                    round(d["refund"], 2),
+                    round(d["cost"], 2),
+                    round(d["shipping_cost"], 2),
+                    round(d["commission"], 2),
+                    round(d["profit"], 2),
+                    round(d["profit"] / income, 4) if income else 0,
+                ]
+            )
+
+        # 合计行
+        if rows:
+            total_income = sum(r[2] for r in rows) + sum(r[3] for r in rows)
+            total_profit = sum(r[8] for r in rows)
+            rows.append(
+                ["合计", sum(r[1] for r in rows)]
+                + [round(sum(r[i] for r in rows), 2) for i in range(2, 9)]
+                + [round(total_profit / total_income, 4) if total_income else 0]
+            )
+
+        if filepath is None:
+            filepath = (
+                global_params.path
+                + "/总账_"
+                + start_day
+                + "_"
+                + end_day
+                + ".xlsx"
+            )
+
+        wb = openpyxl.Workbook()
+        ws = wb.active
+        ws.title = "总账"
+        ws.append(headers)
+        for row in rows:
+            ws.append(row)
+        for cell in ws[1]:
+            cell.font = Font(bold=True)
+            cell.alignment = Alignment(horizontal="center")
+        rate_col = headers.index("利润率") + 1
+        for r in range(2, len(rows) + 2):
+            ws.cell(r, rate_col).number_format = "0.00%"
+            for c in range(3, rate_col):
+                ws.cell(r, c).number_format = "0.00"
+            ws.cell(r, 1).alignment = Alignment(horizontal="center")
+            ws.cell(r, 2).alignment = Alignment(horizontal="center")
+        for i in range(1, len(headers) + 1):
+            ws.column_dimensions[openpyxl.utils.get_column_letter(i)].width = 14
+        wb.save(filepath)
+        print("已导出总账: " + filepath)
         return filepath
 
     def get_fake_order(self):
