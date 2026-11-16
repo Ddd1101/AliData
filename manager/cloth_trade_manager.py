@@ -324,23 +324,25 @@ class ClothTradeManager:
         return round(unit_cost * quantity, 2), (not found)
 
     # 单笔订单利润
-    def get_single_order_profit(self, order):
+    def get_single_order_profit(self, order, with_cost=True):
         base = order["baseInfo"]
         total_amount = round(base.get("totalAmount", 0) or 0, 2)  # 商品总收款
         shipping_fee = round(base.get("shippingFee", 0) or 0, 2)  # 运费
         refund = round(base.get("refund", 0) or 0, 2)  # 总退款
         # 成本：读价格表计算，只统计未退款的 SKU；同时收集缺失成本的货号
+        # 饰品等未接入成本核算的店铺 with_cost=False，成本按 0 计
         cost = 0.0
         missing_items = []
-        for i in order.get("productItems", []):
-            if (i.get("refund", 0) or 0) != 0:
-                continue
-            c, is_missing = self.get_product_cost(i)
-            cost += c
-            if is_missing:
-                missing_items.append(
-                    i.get("cargoNumber") or i.get("productCargoNumber") or ""
-                )
+        if with_cost:
+            for i in order.get("productItems", []):
+                if (i.get("refund", 0) or 0) != 0:
+                    continue
+                c, is_missing = self.get_product_cost(i)
+                cost += c
+                if is_missing:
+                    missing_items.append(
+                        i.get("cargoNumber") or i.get("productCargoNumber") or ""
+                    )
         cost = round(cost, 2)
 
         shipping_cost = SHIPPING_COST  # 运费成本（固定）
