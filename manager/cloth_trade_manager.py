@@ -563,66 +563,6 @@ class ClothTradeManager:
     def get_fake_order(self):
         self.check_orders()
 
-    # 收集原始订单 (暂时没用，订单重复)
-    def get_origin_order_list(self):
-        print("start get_origin_order_list")
-        # 1. 遍历状态
-        for order_status in self.settings.order_status:
-            print(order_status)
-            req_data = {
-                "createStartTime": self.settings.start_time.strip(),
-                "createEndTime": self.settings.end_time.strip(),
-                "orderStatus": order_status,  # 只获取已发出 或者 已签收  todo：或者已完成未到账 或者已完成
-                # "refundStatus": "refundsuccess",
-                "buyerMemberId": "memberId",
-                "buyerLoginId": "LoginId",
-                "needMemoInfo": "true",
-                "pageSize": 20,
-            }
-            # 2. 遍历店铺
-            for shop_name in self.settings.shop_names:
-                if "_aop_signature" in req_data:
-                    req_data.pop("_aop_signature")
-                print("start get_origin_order_list-" + order_status + "-" + shop_name)
-                # 2.1 获取总页数
-                res = api.GetTradeData(req_data, shop_name)
-                page_num = utils.CalPageNum(res["totalRecord"])
-
-                print("订单页数：" + str(page_num))
-
-                # 2.2 按页获取订单项
-                for pageId in range(page_num):
-                    req_data = {
-                        "page": str(pageId + 1),
-                        "createStartTime": self.settings.start_time.strip(),
-                        "createEndTime": self.settings.end_time.strip(),
-                        "orderStatus": order_status,  # 只获取已发出 或者 已签收  todo：或者已完成未到账 或者已完成
-                        # "refundStatus":"refundsuccess",
-                        "buyerMemberId": "memberId",
-                        "buyerLoginId": "LoginId",
-                        "needMemoInfo": "true",
-                        "pageSize": 20,
-                    }
-                    # print(req_data)
-                    res = api.GetTradeData(req_data, shop_name)
-                    # 2.2.1 遍历订单
-                    for order in res["result"]:
-                        # print(order)
-                        # 过滤掉刷单
-                        if ("sellerRemarkIcon" in order["baseInfo"]) and (
-                            order["baseInfo"]["sellerRemarkIcon"]
-                            == global_params.OrderTags.BLUE.value
-                            or order["baseInfo"]["sellerRemarkIcon"]
-                            == global_params.OrderTags.GREEN.value
-                        ):
-                            self.shuadan_orders += order
-                            continue
-                        # todo: 做一个单独的过滤方法 过滤红 或者 黄标签
-                        self.origin_orders[shop_name].append(order)
-
-        self.hasGetOrders = True
-        print("end get_origin_order_list")
-
     # 无视订单状态收集所有原始订单
     def get_all_origin_order_list(self):
         print("start get_all_origin_order_list")
