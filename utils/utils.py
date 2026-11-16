@@ -1,17 +1,15 @@
 import math
 
-import global_params
+import AliData.global_params as global_params
 
 
 def SplitChineseAndPinyin(shopNameRaw):
     """
-        拆分中文和英文
+    拆分中文和英文
     """
     ret = -1
     for i in range(len(str)):
-        if (str[i] >= "a" and str[i] <= "z") or (
-                str[i] >= "A" and str[i] <= "Z"
-        ):
+        if (str[i] >= "a" and str[i] <= "z") or (str[i] >= "A" and str[i] <= "Z"):
             break
         ret = i
     return ret
@@ -19,7 +17,7 @@ def SplitChineseAndPinyin(shopNameRaw):
 
 def NumFormate4Print(numStr):
     """
-        规格化尺码
+    规格化尺码
     """
     res = ""
     if numStr[0] in global_params.en_code:
@@ -45,7 +43,7 @@ def NumFormate4Print(numStr):
 
 def CalPriceLocationENCode(_size):
     """
-        对英文码进行规格化处理
+    对英文码进行规格化处理
     """
     if _size == "":
         return -1
@@ -71,8 +69,5 @@ def CalPriceLocationENCode(_size):
     return -1
 
 
-
 def CalPageNum(totalRecord):
     return math.ceil(totalRecord / 20)
-
-

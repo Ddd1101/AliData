@@ -7,14 +7,17 @@ if __name__ == "__main__":
     todayTmp = datetime.strptime(str(date.today()), "%Y-%m-%d")
     # start_time = todayTmp + timedelta(days=-1)
     # end_time = todayTmp + timedelta(days=0)
-    start_time = datetime(2025, 2, 1)
-    end_time = datetime(2025, 3, 1)
+    start_time = datetime(2025, 6, 28)
+    end_time = datetime(2025, 6, 29)
     cloth_trade_manager = ClothTradeManager()
 
     # shop_names = ["","万盈饰品厂"]
     # shop_names = ["联球制衣厂", "朝雄制衣厂", "朝瑞制衣厂", "万盈饰品厂"]
 
-    shop_names = ["联球饰品厂"]
+    # shop_names = ["义乌睿得"]
+
+    # shop_names = ["义乌茜阳"]
+    shop_names = ["万盈饰品厂"]
 
     # order_status = {global_params.OrderStatus.TRADE_SUCCESS.value, global_params.OrderStatus.TRADE_CANCEL.value,
     #                 global_params.OrderStatus.WAIT_SELLER_SEND.value,
@@ -25,9 +28,17 @@ if __name__ == "__main__":
     order_status = [global_params.OrderStatus.WAIT_BUYER_RECEIVE.value]
 
     # order_status = {global_params.OrderStatus.ALL.value}
-    filter_tags = [global_params.OrderTags.BLUE.value, global_params.OrderTags.GREEN.value]
-    cloth_trade_manager.set_params(shop_names=shop_names, start_time=start_time, end_time=end_time,
-                                   order_status=order_status, filter_tags=filter_tags)
+    filter_tags = [
+        global_params.OrderTags.BLUE.value,
+        global_params.OrderTags.GREEN.value,
+    ]
+    cloth_trade_manager.set_params(
+        shop_names=shop_names,
+        start_time=start_time,
+        end_time=end_time,
+        order_status=order_status,
+        filter_tags=filter_tags,
+    )
 
     cloth_trade_manager.get_sales_amount()
 

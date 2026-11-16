@@ -1,7 +1,7 @@
 import hmac
 from datetime import datetime, timezone
 
-import global_params
+import AliData.global_params
 import time
 import requests
 
@@ -25,7 +25,7 @@ def CalculateSignature(urlPath, data, shopName):
 
     # 执行hmac_sha1算法 && 转为16进制
     hex_res1 = hmac.new(
-        global_params.AppSecret[shopName], mergedParams, digestmod="sha1"
+        AliData.global_params.AppSecret[shopName], mergedParams, digestmod="sha1"
     ).hexdigest()
 
     # 转为全大写字符
@@ -36,20 +36,20 @@ def CalculateSignature(urlPath, data, shopName):
 
 # 交易数据获取  默认1页
 def GetTradeData(data, shopName):
-    data["access_token"] = global_params.access_token[shopName]
+    data["access_token"] = AliData.global_params.access_token[shopName]
     _aop_signature = CalculateSignature(
-        global_params.request_type["trade"]
+        AliData.global_params.request_type["trade"]
         + "alibaba.trade.getSellerOrderList/"
-        + global_params.AppKey[shopName],
+        + AliData.global_params.AppKey[shopName],
         data,
         shopName,
     )
     data["_aop_signature"] = _aop_signature
     url = (
-        global_params.base_url
-        + global_params.request_type["trade"]
+        AliData.global_params.base_url
+        + AliData.global_params.request_type["trade"]
         + "alibaba.trade.getSellerOrderList/"
-        + global_params.AppKey[shopName]
+        + AliData.global_params.AppKey[shopName]
     )
     try:
         res = requests.post(url, data=data)
@@ -63,19 +63,19 @@ def GetTradeData(data, shopName):
 def GetDeliveryData(data, shopName):
     data["access_token"] = global_params.access_token[shopName]
     _aop_signature = CalculateSignature(
-        global_params.request_type["delivery"]
+        AliData.global_params.request_type["delivery"]
         + "alibaba.trade.getLogisticsInfos.sellerView/"
-        + global_params.AppKey[shopName],
+        + AliData.global_params.AppKey[shopName],
         data,
         shopName,
     )
     data["_aop_signature"] = _aop_signature
 
     url = (
-        global_params.base_url
-        + global_params.request_type["delivery"]
+        AliData.global_params.base_url
+        + AliData.global_params.request_type["delivery"]
         + "alibaba.trade.getLogisticsInfos.sellerView/"
-        + global_params.AppKey[shopName]
+        + AliData.global_params.AppKey[shopName]
     )
 
     res = requests.post(url, data=data)
@@ -88,23 +88,23 @@ def GetDeliveryTraceData(data, shopName):
     data["access_token"] = global_params.access_token[shopName]
     tmp = CalculateSignature(
         "param2/1/com.alibaba.logistics/alibaba.trade.getLogisticsInfos.sellerView/"
-        + global_params.AppKey[shopName],
+        + AliData.global_params.AppKey[shopName],
         data,
         shopName,
     )
     _aop_signature = CalculateSignature(
-        global_params.request_type["delivery"]
+        AliData.global_params.request_type["delivery"]
         + "alibaba.trade.getLogisticsTraceInfo.sellerView/"
-        + global_params.AppKey[shopName],
+        + AliData.global_params.AppKey[shopName],
         data,
         shopName,
     )
     data["_aop_signature"] = _aop_signature
     url = (
-        global_params.base_url
-        + global_params.request_type["delivery"]
+        AliData.global_params.base_url
+        + AliData.global_params.request_type["delivery"]
         + "alibaba.trade.getLogisticsTraceInfo.sellerView/"
-        + global_params.AppKey[shopName]
+        + AliData.global_params.AppKey[shopName]
     )
 
     response = requests.post(url, data=data)
@@ -115,18 +115,18 @@ def GetDeliveryTraceData(data, shopName):
 def GetSingleTradeData(data, shopName):
     data["access_token"] = global_params.access_token[shopName]
     _aop_signature = CalculateSignature(
-        global_params.request_type["trade"]
+        AliData.global_params.request_type["trade"]
         + "alibaba.trade.get.sellerView/"
-        + global_params.AppKey[shopName],
+        + AliData.global_params.AppKey[shopName],
         data,
         shopName,
     )
     data["_aop_signature"] = _aop_signature
     url = (
-        global_params.base_url
-        + global_params.request_type["trade"]
+        AliData.global_params.base_url
+        + AliData.global_params.request_type["trade"]
         + "alibaba.trade.get.sellerView/"
-        + global_params.AppKey[shopName]
+        + AliData.global_params.AppKey[shopName]
     )
     res = requests.post(url, data=data)
 

@@ -1,6 +1,6 @@
 from datetime import timedelta, datetime
 
-import utils.ali_api as api
+import AliData.utils.ali_api as api
 
 
 class Settings:
